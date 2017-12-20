@@ -2,4 +2,46 @@
     <string name="app_name">Visit</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="welcome_signup">Sign up</string>
+    <string name="welcome_already_signed_in">Have been here before?</string>
+
+    <string name="visitorInfo_name">Name</string>
+    <string name="visitorInfo_company">Company</string>
+    <string name="visitorInfo_phone">Phone number</string>
+    <string name="visitorInfo_next">Next</string>
+
+    <string name="nda_agreement_text">This is the agreement that you have to agree with.</string>
+    <string name="nda_agree">Yes I agree.</string>
+
+    <string name="idScan_btn_capture">Capture</string>
+
+    <string name="visiteeInfo_visitee_name">Name</string>
+    <string name="visiteeInfo_purpose">Purpose of visit</string>
+    <string name="visiteeInfo_hours">Time for stay</string>
+    <string name="visiteeInfo_button_next">Next</string>
+    <string name="visiteeInfo_button_previous">Previous</string>
+
+    <string name="pref_category_stage_sel">Select stages</string>
+    <string name="pref_stage1">Stage 1</string>
+    <string name="pref_stage2">Stage 2</string>
+    <string name="pref_stage3">Stage 3</string>
+    <string name="pref_stage4">Stage 4</string>
+    <string name="pref_stage5">Stage 5</string>
+
+    <string name="pref_key_stage1">"pref_key_stage1"</string>
+    <string name="pref_key_stage2">"pref_key_stage2"</string>
+    <string name="pref_key_stage3">"pref_key_stage3"</string>
+    <string name="pref_key_stage4">"pref_key_stage4"</string>
+    <string name="pref_key_stage5">"pref_key_stage5"</string>
+
+    <integer name="VisitorInfoFragment">1</integer>
+    <integer name="FaceIdFragment">2</integer>
+    <integer name="NonDisclosureFragment">3</integer>
+
+
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>
