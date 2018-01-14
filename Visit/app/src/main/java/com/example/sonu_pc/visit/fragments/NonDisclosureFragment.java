@@ -1,35 +1,43 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+import com.example.sonu_pc.visit.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link WelcomeFragment.OnFragmentInteractionListener} interface
+ * {@link NonDisclosureFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link WelcomeFragment#newInstance} factory method to
+ * Use the {@link NonDisclosureFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class WelcomeFragment extends Fragment {
+public class NonDisclosureFragment extends Fragment implements View.OnClickListener {
+
+    private static final String TAG = NonDisclosureFragment.class.getSimpleName();
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String TERMS_AND_CONDITIONS = "tnc";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String terms_and_cond;
     private String mParam2;
 
+    private CheckBox mCheckBoxAgree;
+    private TextView mTextViewTnc;
     private OnFragmentInteractionListener mListener;
 
-    public WelcomeFragment() {
+    public NonDisclosureFragment() {
         // Required empty public constructor
     }
 
@@ -39,13 +47,13 @@ public class WelcomeFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment WelcomeFragment.
+     * @return A new instance of fragment NonDisclosureFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static WelcomeFragment newInstance(String param1, String param2) {
-        WelcomeFragment fragment = new WelcomeFragment();
+    public static NonDisclosureFragment newInstance(String param1, String param2) {
+        NonDisclosureFragment fragment = new NonDisclosureFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(TERMS_AND_CONDITIONS, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -55,7 +63,7 @@ public class WelcomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            terms_and_cond = getArguments().getString(TERMS_AND_CONDITIONS);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -64,14 +72,12 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_welcome, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        View view = inflater.inflate(R.layout.fragment_non_disclosure, container, false);
+        mCheckBoxAgree = (CheckBox) view.findViewById(R.id.checkBox_agree);
+        mCheckBoxAgree.setOnClickListener(this);
+        mTextViewTnc = view.findViewById(R.id.text_tnc);
+        mTextViewTnc.setText(terms_and_cond);
+        return view;
     }
 
     @Override
@@ -91,6 +97,20 @@ public class WelcomeFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case(R.id.checkBox_agree):
+                CheckBox checkBox = (CheckBox) v;
+                if(checkBox.isChecked()){
+                    if (mListener != null) {
+                        mListener.onFragmentInteraction(1, 6);
+                    }
+                }
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -103,6 +123,6 @@ public class WelcomeFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(int direction, int stageNo);
     }
 }

@@ -1,13 +1,17 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.sonu_pc.visit.R;
 
 
 /**
@@ -31,8 +35,10 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
     private String mParam1;
     private String mParam2;
 
+    private EditText mEditTextVisiteeName, mEditTextVisitPurpose, mEditTextStayTime;
     private Button mButtonNext, mButtonPrev;
     private OnFragmentInteractionListener mListener;
+    private OnVisiteeInteractionListener mVisiteeListener;
 
     public VisiteeInfoFragment() {
         // Required empty public constructor
@@ -70,6 +76,10 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_visitee_info, container, false);
+        mEditTextVisiteeName = (EditText) view.findViewById(R.id.editText_visitee_name);
+        mEditTextVisitPurpose = (EditText) view.findViewById(R.id.editText_visit_purpose);
+        mEditTextStayTime = (EditText) view.findViewById(R.id.editText_stay_time);
+
         mButtonNext = (Button) view.findViewById(R.id.button_next);
         mButtonPrev = (Button) view.findViewById(R.id.button_previous);
         mButtonNext.setOnClickListener(this);
@@ -89,6 +99,12 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        if (context instanceof OnVisiteeInteractionListener) {
+            mVisiteeListener = (OnVisiteeInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnVisiteeInteractionListener");
+        }
     }
 
     @Override
@@ -103,14 +119,34 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
         switch (id){
             case R.id.button_next:
                 if(mListener != null){
-                    mListener.onFragmentInteraction(1, 2);
+                    mListener.onFragmentInteraction(1, 3);
+                }
+                if(mVisiteeListener != null && isEverythingAllRight()){
+                    String string_visitee_name = mEditTextVisiteeName.getText().toString();
+                    String string_purpose = mEditTextVisitPurpose.getText().toString();
+                    String string_stay_time = mEditTextStayTime.getText().toString();
+
+                    mVisiteeListener.onVisiteeInteraction(string_visitee_name, string_purpose, string_stay_time);
                 }
                 break;
             case R.id.button_previous:
                 if(mListener != null){
-                    mListener.onFragmentInteraction(0, 2);
+                    mListener.onFragmentInteraction(0, 3);
                 }
         }
+    }
+
+    public boolean isEverythingAllRight(){
+        Log.d(TAG, "isEverythingAllRight()");
+        String string_visitee_name = mEditTextVisiteeName.getText().toString();
+        String string_purpose = mEditTextVisitPurpose.getText().toString();
+        String string_stay_time = mEditTextStayTime.getText().toString();
+        if(string_visitee_name == null || string_purpose == null || string_stay_time == null
+                || string_visitee_name == "" || string_purpose == "" || string_stay_time == ""){
+            Toast.makeText(getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -126,5 +162,10 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(int direction, int stageNo);
+    }
+
+    public interface OnVisiteeInteractionListener {
+        // TODO: Update argument type and name
+        void onVisiteeInteraction(String name, String purpose, String time);
     }
 }

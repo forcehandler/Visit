@@ -1,40 +1,44 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
+import android.widget.Button;
+
+import com.example.sonu_pc.visit.activities.QrScanner;
+import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.activities.SignUpActivity;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link NonDisclosureFragment.OnFragmentInteractionListener} interface
+ * {@link WelcomeFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link NonDisclosureFragment#newInstance} factory method to
+ * Use the {@link WelcomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class NonDisclosureFragment extends Fragment implements View.OnClickListener {
-
-    private static final String TAG = NonDisclosureFragment.class.getSimpleName();
-
+public class WelcomeFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private Button mButtonSignUp;
+    private Button mButtonQrSignIn;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    private CheckBox mCheckBoxAgree;
     private OnFragmentInteractionListener mListener;
 
-    public NonDisclosureFragment() {
+    public WelcomeFragment() {
         // Required empty public constructor
     }
 
@@ -44,11 +48,11 @@ public class NonDisclosureFragment extends Fragment implements View.OnClickListe
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment NonDisclosureFragment.
+     * @return A new instance of fragment WelcomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NonDisclosureFragment newInstance(String param1, String param2) {
-        NonDisclosureFragment fragment = new NonDisclosureFragment();
+    public static WelcomeFragment newInstance(String param1, String param2) {
+        WelcomeFragment fragment = new WelcomeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -69,10 +73,19 @@ public class NonDisclosureFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_non_disclosure, container, false);
-        mCheckBoxAgree = (CheckBox) view.findViewById(R.id.checkBox_agree);
-        mCheckBoxAgree.setOnClickListener(this);
+        View view = inflater.inflate(R.layout.fragment_welcome, container, false);
+        mButtonSignUp = (Button) view.findViewById(R.id.btn_signup);
+        mButtonQrSignIn = (Button) view.findViewById(R.id.btn_qr_signin);
+        mButtonSignUp.setOnClickListener(this);
+        mButtonQrSignIn.setOnClickListener(this);
         return view;
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
     }
 
     @Override
@@ -94,15 +107,17 @@ public class NonDisclosureFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        Intent intent = null;
         int id = v.getId();
         switch (id){
-            case(R.id.checkBox_agree):
-                CheckBox checkBox = (CheckBox) v;
-                if(checkBox.isChecked()){
-                    if (mListener != null) {
-                        mListener.onFragmentInteraction(1, 5);
-                    }
-                }
+            case R.id.btn_signup:
+                intent = new Intent(getActivity(), SignUpActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btn_qr_signin:
+                intent = new Intent(getActivity(), QrScanner.class);
+                startActivity(intent);
+                break;
         }
     }
 
@@ -118,6 +133,6 @@ public class NonDisclosureFragment extends Fragment implements View.OnClickListe
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(int direction, int stageNo);
+        void onFragmentInteraction(Uri uri);
     }
 }

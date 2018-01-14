@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.sonu_pc.visit.IdScanFragment">
+    tools:context="com.example.sonu_pc.visit.fragments.IdScanFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -13,7 +13,7 @@
         android:layout_height="400dp"
         android:layout_gravity="center"
         android:keepScreenOn="true"
-        app:cameraFacing="back"
+        app:cameraFacing="front"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginRight="8dp"

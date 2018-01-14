@@ -1,12 +1,10 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.activities;
 
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceFragment;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.example.sonu_pc.visit.R;
 
 public class SettingsActivity extends PreferenceActivity {
 

@@ -1,19 +1,18 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.sonu_pc.visit.R;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 
@@ -108,7 +107,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
 
     private void moveToNext(){
         if(mListener != null){
-            mListener.onFragmentInteraction(1, 4);
+            mListener.onFragmentInteraction(1, 5);
         }
     }
 

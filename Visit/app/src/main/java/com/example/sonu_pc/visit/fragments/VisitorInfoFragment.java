@@ -1,6 +1,7 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,7 +10,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.model.PreferencesModel;
+import com.example.sonu_pc.visit.model.SurveyPreferenceModel;
+import com.example.sonu_pc.visit.model.TextInputModel;
+import com.example.sonu_pc.visit.model.TextInputPreferenceModel;
+import com.example.sonu_pc.visit.utils.VisitUtils;
+import com.google.gson.Gson;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,14 +46,20 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private EditText mEditTextName, mEditTextCompany, mEditTextPhone;
+    private EditText mEditText1, mEditText2, mEditText3, mEditText4;
+    private TextView mTextViewTitle;
     private Button mButtonNext;
+
+    private List<EditText> mEditTexts;
+
+    private TextInputPreferenceModel mTextInputPreferenceModel;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private OnVisitorInteractionListener mVisitorListener;
 
     public VisitorInfoFragment() {
         // Required empty public constructor
@@ -67,15 +90,40 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        mEditTexts = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        PreferencesModel preferencesModel = VisitUtils.getPreferences(getActivity());
+        mTextInputPreferenceModel = preferencesModel.getTextInputPreferenceModel();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_visitor_info, container, false);
-        mButtonNext = (Button) view.findViewById(R.id.button_next);
+        mEditText1 = view.findViewById(R.id.editText1);
+        mEditText2 = view.findViewById(R.id.editText2);
+        mEditText3 = view.findViewById(R.id.editText3);
+        mEditText4 = view.findViewById(R.id.editText4);
+
+        mTextViewTitle = view.findViewById(R.id.textView1);
+
+        mEditTexts.add(mEditText1);
+        mEditTexts.add(mEditText2);
+        mEditTexts.add(mEditText3);
+        mEditTexts.add(mEditText4);
+
+        mTextViewTitle.setText(mTextInputPreferenceModel.getPage_title());
+        // Remove the unnecessary edit texts
+        for(int i = mTextInputPreferenceModel.getHints().size(); i <= 3; i++){
+            mEditTexts.get(i).setVisibility(View.GONE);
+        }
+
+        for(int i = 0;  i < mTextInputPreferenceModel.getHints().size(); i++){
+            mEditTexts.get(i).setHint(mTextInputPreferenceModel.getHints().get(i));
+        }
+        mButtonNext = view.findViewById(R.id.btn_next);
         mButtonNext.setOnClickListener(this);
         return view;
     }
@@ -91,6 +139,13 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+        if (context instanceof OnVisitorInteractionListener) {
+            mVisitorListener = (OnVisitorInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnVisitorInteractionListener");
+        }
+
     }
 
     @Override
@@ -104,14 +159,39 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         if(v == mButtonNext){
             Toast.makeText(getActivity(), "Next Button Pressed", Toast.LENGTH_SHORT).show();
             if (mListener != null) {
+
                 mListener.onFragmentInteraction(1, 1);
+                if (mVisitorListener != null) {
+                    String string_name = mEditText1.getText().toString();
+                    String string_company = mEditText2.getText().toString();
+                    String string_phone = mEditText3.getText().toString();
+                    Log.d(TAG, string_name + ", " + string_company + ", " + string_phone);
+                    mVisitorListener.onVisitorInteraction(string_name, string_company, string_phone);
+
+                    TextInputModel textInputModel = new TextInputModel();
+                    Map<String, String> text_data = new HashMap<>();
+                    for(int i = 0; i < mTextInputPreferenceModel.getHints().size(); i++){
+                        text_data.put(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
+                    }
+                    textInputModel.setText_input_data(text_data);
+                    mVisitorListener.onTextInputInteraction(textInputModel);
+                }
+
             }
+
         }
 
     }
 
     public boolean isEverythingAllRight(){
         Log.d(TAG, "isEverythingAllRight()");
+        String string_name = mEditText1.getText().toString();
+        String string_company = mEditText2.getText().toString();
+        String string_phone = mEditText3.getText().toString();
+        if(string_name.isEmpty() || string_company.isEmpty() || string_phone.isEmpty()){
+            Toast.makeText(getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
     /**
@@ -127,5 +207,10 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(int direction, int stageNo);
+    }
+    public interface OnVisitorInteractionListener {
+        // TODO: Update argument type and name
+        void onVisitorInteraction(String name, String company, String phoneNo);
+        void onTextInputInteraction(TextInputModel textInputModel);
     }
 }

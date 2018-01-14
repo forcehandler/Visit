@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.sonu_pc.visit.NonDisclosureFragment">
+    tools:context="com.example.sonu_pc.visit.fragments.NonDisclosureFragment">
 
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/text_tnc"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginLeft="8dp"

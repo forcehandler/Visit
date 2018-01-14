@@ -1,11 +1,14 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -18,10 +21,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.example.sonu_pc.visit.R;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.squareup.picasso.Picasso;
@@ -47,7 +50,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String VISITOR_NAME = "visitor_name";
     private static final String ARG_PARAM2 = "param2";
 
     private ImageButton mImageButtonCamera;
@@ -56,7 +59,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
     private Bitmap mBitmapFacePhotoColor ;
     private Bitmap mBitmapFacePhotoBnw ;
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String visitor_name;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
@@ -79,7 +82,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
     public static FaceIdFragment newInstance(String param1, String param2) {
         FaceIdFragment fragment = new FaceIdFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(VISITOR_NAME, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -90,7 +93,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            visitor_name = getArguments().getString(VISITOR_NAME);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -122,7 +125,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
 
     private void moveToNext(){
         if(mListener != null){
-            mListener.onFragmentInteraction(1, 3);
+            mListener.onFragmentInteraction(1, 4);
         }
     }
 
@@ -135,7 +138,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
 
             // send the images to the Activity
             if(mPhotoListener != null){
-                mPhotoListener.onFacePhotoTaken(mBitmapFacePhotoColor, mBitmapFacePhotoBnw);
+                mPhotoListener.onFacePhotoTaken(mBitmapFacePhotoColor, changeBitmapContrastBrightness(mBitmapFacePhotoBnw,2,-50));
             }
             //move to the next fragment
             moveToNext();
@@ -158,6 +161,34 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
                 .transform(new CropSquareTransformation()).resize(200,200).centerCrop().into(target);
         // The processed image is now received by the target.
 
+    }
+
+    /**
+     *
+     * @param bmp input bitmap
+     * @param contrast 0..10 1 is default
+     * @param brightness -255..255 0 is default
+     * @return new bitmap
+     */
+    public static Bitmap changeBitmapContrastBrightness(Bitmap bmp, float contrast, float brightness)
+    {
+        ColorMatrix cm = new ColorMatrix(new float[]
+                {
+                        contrast, 0, 0, 0, brightness,
+                        0, contrast, 0, 0, brightness,
+                        0, 0, contrast, 0, brightness,
+                        0, 0, 0, 1, 0
+                });
+
+        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+
+        Canvas canvas = new Canvas(ret);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return ret;
     }
 
     //not a good hack, but picasso needs the image uri and not the bitmap itself
@@ -256,6 +287,9 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         if(grantResults[0]== PackageManager.PERMISSION_GRANTED){
             Log.v(TAG,"Permission: "+permissions[0]+ "was "+grantResults[0]);
             //resume tasks needing this permission
+        }
+        else{
+            Log.v(TAG,"Permission: "+permissions[0]+ "was not granted");
         }
     }
 

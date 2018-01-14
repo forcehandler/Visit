@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "597114606341",
+    "firebase_url": "https://visit-ecb67.firebaseio.com",
+    "project_id": "visit-ecb67",
+    "storage_bucket": "visit-ecb67.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597114606341:android:d14c7b74fe4ef4a5",
+        "android_client_info": {
+          "package_name": "com.example.sonu_pc.visit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597114606341-nbel1qup4nhkogrug755am6pbmd7v2lv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sonu_pc.visit",
+            "certificate_hash": "f9327ba01a3e1c3d4274083d8857d4906ba8e8bb"
+          }
+        },
+        {
+          "client_id": "597114606341-5t5mf4oqgs7mg8le3b1pvj5v9ga7atv0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sonu_pc.visit",
+            "certificate_hash": "fcba30097bb6c639d70ee5e23d0d9b9ee35e703c"
+          }
+        },
+        {
+          "client_id": "597114606341-jslorps0msm8l1l075ds61r6affv79aq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZu5N03j1ZnascvzHgGvUZ7i0uMb7YKBA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597114606341-jslorps0msm8l1l075ds61r6affv79aq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

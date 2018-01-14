@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>stage1</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>stage2</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>stage3</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>stage4</key>
+        <value>true</value>
+    </entry>
+    <entry>
+        <key>stage5</key>
+        <value>true</value>
+    </entry>
+
+</defaultsMap>
+    <!-- END xml_defaults -->
