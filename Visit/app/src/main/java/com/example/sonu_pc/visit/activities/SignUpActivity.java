@@ -15,9 +15,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.fragments.FaceIdFragment;
@@ -83,6 +86,11 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_sign_up);
 
         // Initialize the views
@@ -252,48 +260,56 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
         switch(moveToStageNo){
             case 1:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, VisitorInfoFragment.newInstance("",""))
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .addToBackStack(null)
                         .commit();
                 break;
             case 2:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, SurveyFragment.newInstance("",""))
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .addToBackStack(null)
                         .commit();
                 break;
             case 3:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, VisiteeInfoFragment.newInstance("",""))
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .addToBackStack(null)
                         .commit();
                 break;
             case 4:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, FaceIdFragment.newInstance("",""))
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .commit();
                 break;
             case 5:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, IdScanFragment.newInstance("",""))
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .commit();
                 break;
             case 6:
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, NonDisclosureFragment.newInstance(preferencesModel.getTermsAndCond(),""))
+
                         .commit();
                 break;
             case -1:
                 //printIdCard();
                 //TODO: Verify the integrity of the CouponModel
                 fragmentManager.beginTransaction()
+                        .setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out)
                         .replace(R.id.fragment_container, new ThankYouFragment())
-                        .setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right)
+
                         .commit();
                 //addVisitor(couponModel);
 

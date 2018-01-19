@@ -6,8 +6,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,24 +22,16 @@ import com.example.sonu_pc.visit.model.SurveyModel;
 import com.example.sonu_pc.visit.model.SurveyPreferenceModel;
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SurveyFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SurveyFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class SurveyFragment extends Fragment implements View.OnClickListener {
+public class SurveyFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
 
     private static final String TAG = SurveyFragment.class.getSimpleName();
-
 
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
     private TextView mTextViewTitle;
@@ -68,15 +62,6 @@ public class SurveyFragment extends Fragment implements View.OnClickListener {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SurveyFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SurveyFragment newInstance(String param1, String param2) {
         SurveyFragment fragment = new SurveyFragment();
         Bundle args = new Bundle();
@@ -138,10 +123,8 @@ public class SurveyFragment extends Fragment implements View.OnClickListener {
         // Set the hint text for visible edit texts
         for(int i = 0; i < surveyPreferenceModel.getSurvey_item_name().size(); i++){
             mEditTexts.get(i).setHint(surveyPreferenceModel.getSurvey_item_name().get(i));
+            mEditTexts.get(i).setOnTouchListener(this);
         }
-       /* mEditText1.setHint(surveyPreferenceModel.getSurvey_item_name().get(0));
-        mEditText2.setHint(surveyPreferenceModel.getSurvey_item_name().get(1));
-        mEditText3.setHint(surveyPreferenceModel.getSurvey_item_name().get(2));*/
 
         return view;
     }
@@ -174,143 +157,102 @@ public class SurveyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
 
+        if(view == mButtonNext) {
+            if (isEverythingAllRight()) {
+                if (mListener != null) {
+                    if (mSurveyListener != null) {
+                        String item1 = mEditText1.getText().toString();
+                        String item2 = mEditText2.getText().toString();
+                        String item3 = mEditText3.getText().toString();
+                        Log.d(TAG, item1 + ", " + item2 + ", " + item3);
 
-        if(view == mButtonNext){
-            if(mListener != null){
-                if(mSurveyListener != null){
-                    String item1 = mEditText1.getText().toString();
-                    String item2 = mEditText2.getText().toString();
-                    String item3 = mEditText3.getText().toString();
-                    Log.d(TAG, item1 + ", " +  item2 + ", " + item3);
-                    mSurveyListener.onSurveyInteraction(surveyModel);
+                        Log.d(TAG, "survey answers = " + survey_answers.toString());
+                        surveyModel.setSurvey_results(survey_answers);
+                        mSurveyListener.onSurveyInteraction(surveyModel);
+                    }
+                    // First send out the info and then call for change of fragment
+                    mListener.onFragmentInteraction(1, 2);
                 }
-                // First send out the info and then call for change of fragment
-                mListener.onFragmentInteraction(1,2);
             }
-
-
         }
-
-
-        if(view == mEditText1){
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(surveyPreferenceModel.getSurvey_item_name().get(0));
-
-            // list of options
-            ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(0);
-            final String [] options = optionsList.toArray(new String[optionsList.size()]);
-
-            builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    survey_answers.put(surveyPreferenceModel.getSurvey_item_name().get(0), options[i]);
-                    Log.d(TAG, "option selected = " + options[i]);
-                    mEditText1.setText(options[i]);
-                }
-            });
-            builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Log.d(TAG, "option selected");
-                }
-            });
-            builder.create().show();
-        }
-        if(view == mEditText2){
-            // list of options
-            ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(1);
-            final String [] options = optionsList.toArray(new String[optionsList.size()]);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(surveyPreferenceModel.getSurvey_item_name().get(1));
-
-            builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    survey_answers.put(surveyPreferenceModel.getSurvey_item_name().get(1), options[i]);
-                    Log.d(TAG, "option selected = " + options[i]);
-                    mEditText2.setText(options[i]);
-                }
-            });
-            builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Log.d(TAG, "option selected");
-                }
-            });
-            builder.create().show();
-        }
-        if(view == mEditText3){
-            // list of options
-            ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(2);
-            final String [] options = optionsList.toArray(new String[optionsList.size()]);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(surveyPreferenceModel.getSurvey_item_name().get(2));
-
-            builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    survey_answers.put(surveyPreferenceModel.getSurvey_item_name().get(2), options[i]);
-                    Log.d(TAG, "option selected = " + options[i]);
-                    mEditText3.setText(options[i]);
-                }
-            });
-            builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Log.d(TAG, "option selected");
-                }
-            });
-            builder.create().show();
-        }
-
-        if(view == mEditText4){
-            // list of options
-            ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(3);
-            final String [] options = optionsList.toArray(new String[optionsList.size()]);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(surveyPreferenceModel.getSurvey_item_name().get(2));
-
-            builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    survey_answers.put(surveyPreferenceModel.getSurvey_item_name().get(3), options[i]);
-                    Log.d(TAG, "option selected = " + options[i]);
-                    mEditText4.setText(options[i]);
-                }
-            });
-            builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    Log.d(TAG, "option selected");
-                }
-            });
-            builder.create().show();
-        }
-        Log.d(TAG, "survey answers = " + survey_answers.toString());
-        surveyModel.setSurvey_results(survey_answers);
     }
 
+    private void createOptionsDialog(final int i){
+        ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(i);
+        final String [] options = optionsList.toArray(new String[optionsList.size()]);
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+        final String survey_item_name = surveyPreferenceModel.getSurvey_item_name().get(i);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(survey_item_name);
+        builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int j) {
+                survey_answers.put(survey_item_name, options[j]);
+                Log.d(TAG, "option selected = " + options[j]);
+                mEditTexts.get(i).setText(options[j]);
+            }
+        });
+        builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int j) {
+                Log.d(TAG, "option selected");
+                if(TextUtils.isEmpty(survey_answers.get(survey_item_name))){
+                    survey_answers.put(survey_item_name, options[0]);
+                    mEditTexts.get(i).setText(options[0]);
+                }
+            }
+        });
+
+
+
+        builder.create().show();
+    }
+
+    public boolean isEverythingAllRight(){
+
+        boolean isGood = true;
+
+        for(int i = 0; i < surveyPreferenceModel.getSurvey_item_name().size(); i++){
+            EditText et = mEditTexts.get(i);
+            String input = et.getText().toString();
+            if(TextUtils.isEmpty(input)){
+                isGood = false;
+                et.setError("Please select " + et.getHint());
+            }
+        }
+        return isGood;
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        if(MotionEvent.ACTION_UP == motionEvent.getAction()){
+            switch (view.getId()){
+                case R.id.editText1:
+                    createOptionsDialog(0);
+                    Log.d(TAG, "focussed = " + 0);
+                    break;
+                case R.id.editText2:
+                    createOptionsDialog(1);
+                    Log.d(TAG, "focussed = " + 1);
+                    break;
+                case R.id.editText3:
+                    createOptionsDialog(2);
+                    Log.d(TAG, "focussed = " + 2);
+                    break;
+                case R.id.editText4:
+                    createOptionsDialog(3);
+                    Log.d(TAG, "focussed = " + 3);
+                    break;
+            }
+        }
+        return true;
+    }
+
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(int direction, int stageNo);
     }
     public interface OnSurveyInteractionListener {
-        // TODO: Update argument type and name
         void onSurveyInteraction(SurveyModel surveyModel);
     }
 }

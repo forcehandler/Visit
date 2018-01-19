@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,6 @@ import android.view.ViewGroup;
 import com.example.sonu_pc.visit.R;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class ThankYouFragment extends Fragment {
 
     private static final String TAG = ThankYouFragment.class.getSimpleName();
@@ -35,12 +33,14 @@ public class ThankYouFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_thank_you, container, false);
-        view.setOnClickListener(new View.OnClickListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onClick(View view) {
-                mListener.OnThankYouFragmentInteraction();
+            public void run() {
+                if(mListener != null){
+                    mListener.OnThankYouFragmentInteraction();
+                }
             }
-        });
+        }, 2000); // 2 sec delay
         return view;
     }
 
@@ -57,7 +57,7 @@ public class ThankYouFragment extends Fragment {
     }
 
     public interface OnThankYouFragmentInteractionListener{
-        public void OnThankYouFragmentInteraction();
+        void OnThankYouFragmentInteraction();
     }
 
 }

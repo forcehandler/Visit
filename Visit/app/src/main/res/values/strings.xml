@@ -119,4 +119,10 @@
     <string name="REMOTE_STAGE5_KEY">stage5</string>
     <string name="CONFIGURATION_PREFERENCE_KEY">ConfigPreference</string>
     <string name="REMOTE_CONFIG_PREFERENCE">remote_config_preference</string>
+    <string name="logo_transition_name">logo_transition_name</string>
+
+
+    <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
+    <string name="TEXT_FROM_SPEECH">text_output</string>
+    <string name="speech_dialog_title">title</string>
 </resources>

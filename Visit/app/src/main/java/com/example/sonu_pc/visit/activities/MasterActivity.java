@@ -42,8 +42,6 @@ public class MasterActivity extends AppCompatActivity implements WelcomeFragment
                     commit();
         }
 
-
-
     }
 
     @Override

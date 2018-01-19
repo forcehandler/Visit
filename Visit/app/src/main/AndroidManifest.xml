@@ -36,9 +36,7 @@
             android:label="@string/app_title" />
         <activity android:name=".activities.SignUpActivity" />
         <activity android:name=".activities.SettingsActivity" />
-        <activity android:name=".activities.MasterActivity">
-
-        </activity>
+        <activity android:name=".activities.MasterActivity"></activity>
         <activity android:name=".activities.QrScanner" />
         <activity android:name=".activities.SetupActivity">
             <intent-filter>
@@ -47,6 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SpeechRecognitionHelperActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
     </application>
 
 </manifest>

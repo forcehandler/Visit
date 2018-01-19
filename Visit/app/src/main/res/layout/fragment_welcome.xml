@@ -7,7 +7,7 @@
     tools:context="com.example.sonu_pc.visit.fragments.WelcomeFragment">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imageViewLogo"
         android:layout_width="259dp"
         android:layout_height="329dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -15,7 +15,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.29"
-        app:srcCompat="@drawable/ic_apple_logo_black" />
+        app:srcCompat="@drawable/ic_apple_logo_black"
+        android:transitionName="@string/logo_transition_name"/>
 
     <Button
         android:id="@+id/btn_signup"
@@ -23,13 +24,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:background="@android:color/black"
+        android:background="@color/colorAccent"
         android:text="SIGNUP"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLogo" />
 
     <Button
         android:id="@+id/btn_qr_signin"
@@ -39,6 +40,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:text="Been Here Before"
+        android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
