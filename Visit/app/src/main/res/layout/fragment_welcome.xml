@@ -15,7 +15,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.29"
-        app:srcCompat="@drawable/ic_apple_logo_black"
+        app:srcCompat="@drawable/spectrum_5"
         android:transitionName="@string/logo_transition_name"/>
 
     <Button
@@ -41,6 +41,7 @@
         android:layout_marginTop="8dp"
         android:text="Been Here Before"
         android:textColor="@color/colorAccent"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

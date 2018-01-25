@@ -1,15 +1,20 @@
 package com.example.sonu_pc.visit.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.model.PreferencesModel;
@@ -40,6 +45,9 @@ public class SetupActivity extends AppCompatActivity {
     private DatabaseReference mDatabaseReference;
 
     private ConstraintLayout mConstraintLayout;
+    private ProgressBar mProgressBar;
+    private ImageView mImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +59,8 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setup);
 
         mConstraintLayout = findViewById(R.id.constraint_container_setup);
+        mProgressBar = findViewById(R.id.progress_bar);
+        mImageView = findViewById(R.id.brand_logo);
 
         startSigninSequence();
     }
@@ -211,9 +221,15 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private void moveToSignupActivity(){
+
+        View sharedView = mImageView;
+        String transition_name = mImageView.getTransitionName();
+
+        ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, transition_name);
         Intent intent = new Intent(this, MasterActivity.class); // Currently the naming scheme is screwed
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // TODO: Fix the class naming scheme
-        startActivity(intent);
+        startActivity(intent, activityOptionsCompat.toBundle());
         finish();
     }
 }

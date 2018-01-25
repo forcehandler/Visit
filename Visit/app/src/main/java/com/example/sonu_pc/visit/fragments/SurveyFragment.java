@@ -1,6 +1,7 @@
 package com.example.sonu_pc.visit.fragments;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -185,15 +186,15 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(survey_item_name);
-        builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
+       /* builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int j) {
                 survey_answers.put(survey_item_name, options[j]);
                 Log.d(TAG, "option selected = " + options[j]);
                 mEditTexts.get(i).setText(options[j]);
             }
-        });
-        builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
+        });*/
+        /*builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int j) {
                 Log.d(TAG, "option selected");
@@ -202,11 +203,22 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
                     mEditTexts.get(i).setText(options[0]);
                 }
             }
+        });*/
+
+        builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int j) {
+                survey_answers.put(survey_item_name, options[j]);
+                Log.d(TAG, "option selected = " + options[j]);
+                mEditTexts.get(i).setText(options[j]);
+                dialogInterface.dismiss();
+            }
         });
 
 
-
-        builder.create().show();
+        Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     public boolean isEverythingAllRight(){

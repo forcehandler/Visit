@@ -207,8 +207,38 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                     String result_text = data.getStringExtra(getString(R.string.TEXT_FROM_SPEECH));
                     Log.d(TAG, "speech result = result_tag");
                     mFocusedEditText.setText(result_text);
+                    moveFocusToNextEditText();
                 }
                 break;
+        }
+    }
+
+    private void moveFocusToNextEditText(){
+        if(mFocusedEditText != null) {
+            int focusId = mFocusedEditText.getId();
+            switch (focusId){
+                case R.id.editText1:
+                    if(mEditText2.getVisibility() == View.VISIBLE){
+                        mEditText2.requestFocus();
+                        mFocusedEditText = mEditText2;
+                    }
+                    break;
+                case R.id.editText2:
+                    if(mEditText3.getVisibility() == View.VISIBLE){
+                        mEditText3.requestFocus();
+                        mFocusedEditText = mEditText3;
+                    }
+                    break;
+                case R.id.editText3:
+                    if(mEditText4.getVisibility() == View.VISIBLE){
+                        mEditText4.requestFocus();
+                        mFocusedEditText = mEditText4;
+                    }
+                    break;
+                default:
+                    mButtonNext.requestFocus();
+                    break;
+            }
         }
     }
 
