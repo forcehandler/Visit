@@ -1,4 +1,4 @@
-package com.example.sonu_pc.visit.model;
+package com.example.sonu_pc.visit.model.preference_model;
 
 import java.util.ArrayList;
 
@@ -6,11 +6,12 @@ import java.util.ArrayList;
  * Created by sonupc on 13-01-2018.
  */
 
-public class SurveyPreferenceModel {
+public class SurveyPreferenceModel extends Preference{
 
     private String survey_title;
     private ArrayList<String> survey_item_name;
     private ArrayList<ArrayList<String>> survey_item_options;
+    public final String wipe = "CLASS_SURVEYINPUT";
 
     public SurveyPreferenceModel() {
     }
@@ -43,5 +44,9 @@ public class SurveyPreferenceModel {
 
     public void setSurvey_item_options(ArrayList<ArrayList<String>> survey_item_options) {
         this.survey_item_options = survey_item_options;
+    }
+
+    public String getWipe() {
+        return wipe;
     }
 }

@@ -2,27 +2,27 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
       <PreferenceCategory
-        android:title="@string/pref_category_stage_sel"
+        android:type="@string/pref_category_stage_sel"
         android:key="pref_key_stages_select">
         <CheckBoxPreference
             android:key="@string/pref_key_stage1"
-            android:title="@string/pref_stage1"
+            android:type="@string/pref_stage1"
             android:defaultValue="true"/>
         <CheckBoxPreference
             android:key="@string/pref_key_stage2"
-            android:title="@string/pref_stage2"
+            android:type="@string/pref_stage2"
             android:defaultValue="true" />
         <CheckBoxPreference
             android:key="@string/pref_key_stage3"
-            android:title="@string/pref_stage3"
+            android:type="@string/pref_stage3"
             android:defaultValue="true" />
           <CheckBoxPreference
               android:key="@string/pref_key_stage4"
-              android:title="@string/pref_stage4"
+              android:type="@string/pref_stage4"
               android:defaultValue="true" />
           <CheckBoxPreference
               android:key="@string/pref_key_stage5"
-              android:title="@string/pref_stage5"
+              android:type="@string/pref_stage5"
               android:defaultValue="true" />
     </PreferenceCategory>
 

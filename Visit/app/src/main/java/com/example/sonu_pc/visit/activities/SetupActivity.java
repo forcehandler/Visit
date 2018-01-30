@@ -1,6 +1,6 @@
 package com.example.sonu_pc.visit.activities;
 
-import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -17,9 +17,20 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.model.PreferencesModel;
-import com.example.sonu_pc.visit.model.SurveyPreferenceModel;
-import com.example.sonu_pc.visit.model.TextInputPreferenceModel;
+import com.example.sonu_pc.visit.fragments.SurveyFragment;
+import com.example.sonu_pc.visit.model.preference_model.Child1;
+import com.example.sonu_pc.visit.model.preference_model.Child2;
+import com.example.sonu_pc.visit.model.preference_model.Listbhola;
+import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
+import com.example.sonu_pc.visit.model.preference_model.Parent;
+import com.example.sonu_pc.visit.model.preference_model.Preference;
+import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
+import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
+import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
+import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
+import com.example.sonu_pc.visit.utils.GsonUtils;
+import com.example.sonu_pc.visit.utils.RuntimeTypeAdapterFactory;
+import com.example.sonu_pc.visit.utils.VisitUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -30,8 +41,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +89,15 @@ public class SetupActivity extends AppCompatActivity {
                     .show();
 
             // Obtain the config values
-            getConfigValues();
+            //TODO: for testing masterworkflow object
+            //getConfigValues();
+
+            // TODO: for testing only, added always on registration and commented get config vavlues
+            test_registerInstitutionForRemoteConfig();
+            //test_getConfigValues();
+
+            //test_firebase_so_ques();
+
         }
         else {
             // not signed in
@@ -97,16 +120,97 @@ public class SetupActivity extends AppCompatActivity {
                 Snackbar.make(mConstraintLayout, "Successfully Signed In", Snackbar.LENGTH_SHORT)
                         .show();
                 // First time registration of institution on realtime database for remote config
-                registerInstitutionForRemoteConfig();
-                // Obtain the config values
-                //getConfigValues();      // Required here as well to save defaults to shared preferences
-                // ^ Now called after the Institute is successfully registered
+                //TODO: for testing masterworkflow object
+                //registerInstitutionForRemoteConfig();
+
+                test_registerInstitutionForRemoteConfig();
+
             }
             else{
                 // Sign in failed
                 if(response == null){
                     // user pressed back button
                 }
+            }
+        }
+    }
+
+    private void test_firebase_so_ques(){
+        Child1 child1 = new Child1();
+        child1.setC1title("c1");
+        Child2 child2 = new Child2();
+        child2.setC2title("c2");
+        ArrayList<Parent> list = new ArrayList<>();
+        list.add(child1);
+        list.add(child2);
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mDatabaseReference.child("test")
+                .setValue(list)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Successfully registered on realtime database");
+                        get_firebase_so_ques();
+                    }
+
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "failed to add preference object", e);
+                    }
+                });
+
+
+    }
+
+    private void get_firebase_so_ques(){
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference("test");
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<ArrayList<Parent>> t = new GenericTypeIndicator<ArrayList<Parent>>() {};
+                ArrayList<Parent> yourStringArray = dataSnapshot.getValue(t);
+                List<Parent> list = dataSnapshot.getValue(t);
+                Log.d(TAG, "Successfully obtained the test list");
+                testTheList(list);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void testTheList(List<Parent> list){
+
+        for(Parent p : list){
+            Log.d(TAG, "oolala");
+            if(p instanceof  Child1){
+                Log.d(TAG, "c1 child");
+            }
+            if(p instanceof Child2){
+                Log.d(TAG, "c2 child");
+            }
+        }
+
+
+        Child1 child1 = new Child1();
+        child1.setC1title("c1");
+        Child2 child2 = new Child2();
+        child2.setC2title("c2");
+        ArrayList<Parent> list1 = new ArrayList<>();
+        list1.add(child1);
+        list1.add(child2);
+        for(Parent p : list1){
+            Log.d(TAG, "wohoo");
+            if(p instanceof  Child1){
+                Log.d(TAG, "c1 child");
+            }
+            if(p instanceof Child2){
+                Log.d(TAG, "c2 child");
             }
         }
     }
@@ -171,6 +275,8 @@ public class SetupActivity extends AppCompatActivity {
         preferencesModel.setSurveyPreferenceModel(surveyPreferenceModel);
         preferencesModel.setTextInputPreferenceModel(textInputPreferenceModel);
 
+        preferencesModel.setInstituteEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+
         mDatabaseReference.child(FirebaseAuth.getInstance().getUid())
                 .setValue(preferencesModel)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -230,6 +336,182 @@ public class SetupActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // TODO: Fix the class naming scheme
         startActivity(intent, activityOptionsCompat.toBundle());
-        finish();
+        supportFinishAfterTransition();
     }
+
+
+    private void test_registerInstitutionForRemoteConfig(){
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        MasterWorkflow masterWorkflow = VisitUtils.getDefaultMasterWorkflow(this);
+
+        mDatabaseReference.child(FirebaseAuth.getInstance().getUid())
+                .setValue(masterWorkflow)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Successfully registered masterworkflow on realtime database");
+                        test_getConfigValues();
+                    }
+
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "failed to add masterworkflow object", e);
+                    }
+                });
+    }
+
+
+    private void test_getConfigValues(){
+
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid());
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                MasterWorkflow masterWorkflow = dataSnapshot.getValue(MasterWorkflow.class);
+                Log.d(TAG, "Successfully obtained the masterworkflow object");
+                for(DataSnapshot child : dataSnapshot.getChildren()){
+                    Log.d(TAG, "children " + child.getKey());
+                }
+
+                DataSnapshot child_map = dataSnapshot.child(dataSnapshot.getChildren().iterator().next().getKey());
+                // Now we can have multiple workflows within a map so iterate over each workflow and substitute for the order of screens
+                for(DataSnapshot workflow: child_map.getChildren()){
+                    Log.d(TAG, "workflow name = " + workflow.getKey());
+
+                    // TODO: Find a way to remove the order_of_screens hardcoded value maybe via remoteconfig
+                    DataSnapshot order_of_screens = workflow.child("order_of_screens");
+
+                    ArrayList<Preference> orderOfScreensList = new ArrayList<>();
+                    for(DataSnapshot screen : order_of_screens.getChildren()){
+                        Log.d(TAG, "screen key = " + screen.getKey());
+
+                        // TODO: for testing only
+                        for(DataSnapshot ds : screen.getChildren()){
+                            Log.d(TAG, "screen attrib = " + ds.getKey());
+                        }
+
+
+                        String type = screen.child("wipe").getValue(String.class);
+                        Log.d(TAG, "screen wipe = " + type);
+                        if(getString(R.string.CLASS_TEXTINPUT).equals(type)){
+                            Log.d(TAG, "got the text input class");
+                            TextInputPreferenceModel textInputPreferenceModel = screen.getValue(TextInputPreferenceModel.class);
+                            Log.d(TAG, "textclass = " + textInputPreferenceModel.getPage_title());
+                            orderOfScreensList.add(textInputPreferenceModel);
+                        }
+                        else if(getString(R.string.CLASS_SURVEYINPUT).equals(type)){
+                            Log.d(TAG, "got the survey input class");
+                            SurveyPreferenceModel surveyPreferenceModel = screen.getValue(SurveyPreferenceModel.class);
+                            Log.d(TAG, "survey class = " + surveyPreferenceModel.getSurvey_title());
+                            orderOfScreensList.add(surveyPreferenceModel);
+                        }
+                        else if(getString(R.string.CLASS_THANKYOU).equals(type)){
+                            Log.d(TAG, "got the thank you class");
+                            ThankYouPreference thankYouPreference = screen.getValue(ThankYouPreference.class);
+                            Log.d(TAG, "survey class = " +thankYouPreference.getThank_you_text());
+                            orderOfScreensList.add(thankYouPreference);
+                        }
+                    }
+                    masterWorkflow.getWorkflows_map().get(workflow.getKey()).setOrder_of_screens(orderOfScreensList);
+                }
+                // Store preference object in shared preferences
+                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                Gson gson = GsonUtils.getGsonParser();
+                String config_string = gson.toJson(masterWorkflow);
+                Log.d(TAG, config_string);
+                editor.putString(getString(R.string.PREF_KEY_MASTERWORKFLOW), config_string);
+                editor.putString("key", "testvalue");
+                editor.commit();
+
+
+                //seeJsonObject(masterWorkflow);
+                moveToSignupActivity();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+       /* mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid())
+                .child("workflows_map").child("Enquiry_workflow").child("order_of_screens");
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    Log.d(TAG, "children = " + snapshot.getValue());
+                    String wipe = snapshot.child("wipe").getValue(String.class);
+                    if(getString(R.string.CLASS_TEXTINPUT).equals(wipe)){
+                        Log.d(TAG, "got the text input class");
+                        TextInputPreferenceModel textInputPreferenceModel = snapshot.getValue(TextInputPreferenceModel.class);
+                        Log.d(TAG, "textclass = " + textInputPreferenceModel.getPage_title());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });*/
+    }
+
+
+
+
+    /*private void seeJsonObject() {
+        RuntimeTypeAdapterFactory<Parent> adapter =
+                RuntimeTypeAdapterFactory
+                        .of(Parent.class)
+                        .registerSubtype(Child1.class)
+                        .registerSubtype(Child2.class);
+
+        List<Parent> list = new ArrayList<>();
+        Child1 ch1 = new Child1();
+        ch1.setC1title("ch1c1");
+        Child2 ch2 = new Child2();
+        ch2.setC2title("ch2c2");
+        list.add(ch1);
+        list.add(ch2);
+
+        Listbhola bhola = new Listbhola();
+        bhola.setList(list);
+
+        Gson gson2=new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
+        Gson gson = new Gson();
+        Log.d(TAG, "---------------------");
+        Log.d(TAG, gson.toJson(bhola));
+        Log.d(TAG, "---------------------");
+        Log.d(TAG, gson2.toJson(bhola));
+    }*/
+
+    /*private void seeJsonObject(MasterWorkflow masterWorkflow) {
+        RuntimeTypeAdapterFactory<Preference> adapter =
+                RuntimeTypeAdapterFactory
+                        .of(Preference.class)
+                        .registerSubtype(TextInputPreferenceModel.class)
+                        .registerSubtype(SurveyPreferenceModel.class);
+
+
+        Gson gson2=new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
+        Gson gson = new Gson();
+        Log.d(TAG, "---------------------");
+        Log.d(TAG, gson.toJson(masterWorkflow));
+        Log.d(TAG, "---------------------");
+        Log.d(TAG, gson2.toJson(masterWorkflow));
+
+
+        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String config_string = gson2.toJson(masterWorkflow);
+        Log.d(TAG, config_string);
+        editor.putString(getString(R.string.PREF_KEY_MASTERWORKFLOW), config_string);
+        editor.putString("key", "testvalue");
+        editor.commit();
+    }*/
 }

@@ -2,10 +2,12 @@ package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,19 +17,35 @@ import android.widget.ImageView;
 import com.example.sonu_pc.visit.activities.QrScanner;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.activities.SignUpActivity;
+import com.example.sonu_pc.visit.activities.StageActivity;
+import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
+import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
+import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class WelcomeFragment extends Fragment implements View.OnClickListener {
 
+    private static final String TAG = WelcomeFragment.class.getSimpleName();
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private Button mButtonSignUp;
+    private Button mButton_1, mButton_2, mButton_3;
     private Button mButtonQrSignIn;
+
+    private List<Button> buttonList;
 
     private ImageView mImageViewBrandLogo;
 
+    private MasterWorkflow masterWorkflow;
+
+    Map<Integer, String> button_workflow_map;
 
     private String mParam1;
     private String mParam2;
@@ -55,6 +73,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        initMasterWorkflow();
     }
 
     @Override
@@ -62,15 +81,47 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_welcome, container, false);
-        mButtonSignUp = (Button) view.findViewById(R.id.btn_signup);
-        mButtonQrSignIn = (Button) view.findViewById(R.id.btn_qr_signin);
+        buttonList = new ArrayList<>();
+
+        mButton_1 = view.findViewById(R.id.button1);
+        mButton_2 = view.findViewById(R.id.button2);
+        mButton_3 = view.findViewById(R.id.button3);
+
+        buttonList.add(mButton_1);
+        buttonList.add(mButton_2);
+        buttonList.add(mButton_3);
+
+        mButtonQrSignIn = view.findViewById(R.id.btn_qr_signin);
         mImageViewBrandLogo = view.findViewById(R.id.imageViewLogo);
 
-        mButtonSignUp.setOnClickListener(this);
-        mButtonQrSignIn.setOnClickListener(this);
+        button_workflow_map = new HashMap<>();
+        int button_counter = 0;
+        Map<String, PreferencesModel> map =  masterWorkflow.getWorkflows_map();
+
+        //TODO: Check if the mapping order stays the same for button and workflow
+        for(String key : map.keySet()){
+            Button btn = buttonList.get(button_counter++);
+            btn.setVisibility(View.VISIBLE);
+            btn.setText(key);
+            btn.setOnClickListener(this);
+            button_workflow_map.put(btn.getId(), key);
+        }
+
+        //mButtonQrSignIn.setOnClickListener(this);
         return view;
     }
 
+    private void initMasterWorkflow(){
+        SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String workflow_json = preferences.getString(getString(R.string.PREF_KEY_MASTERWORKFLOW), "NOPREF");
+        if(workflow_json == "NOPREF"){
+            Log.e(TAG, "Could not fetch the workflow json from sharedpreferences");
+        }
+        else{
+            masterWorkflow = gson.fromJson(workflow_json, MasterWorkflow.class);
+        }
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -93,15 +144,44 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Intent intent = null;
         int id = v.getId();
+
+        View sharedView = mImageViewBrandLogo;
+        String transitionName = mImageViewBrandLogo.getTransitionName();
+
+        ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), sharedView, transitionName);
+
         switch (id){
-            case R.id.btn_signup:
+            /*case R.id.btn_signup:
                 View sharedView = mImageViewBrandLogo;
                 String transitionName = mImageViewBrandLogo.getTransitionName();
 
                 ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), sharedView, transitionName);
                 intent = new Intent(getActivity(), SignUpActivity.class);
+                //intent.putExtra("workflow_name", )
                 startActivity(intent, activityOptionsCompat.toBundle());
+                break;*/
+
+            case R.id.button1:
+
+                intent = new Intent(getActivity(), StageActivity.class);
+                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
+                startActivity(intent);
                 break;
+
+            case R.id.button2:
+
+                intent = new Intent(getActivity(), StageActivity.class);
+                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
+                startActivity(intent);
+                break;
+
+            case R.id.button3:
+
+                intent = new Intent(getActivity(), StageActivity.class);
+                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
+                startActivity(intent);
+                break;
+
             case R.id.btn_qr_signin:
                 intent = new Intent(getActivity(), QrScanner.class);
                 startActivity(intent);

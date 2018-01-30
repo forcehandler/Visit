@@ -18,12 +18,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.model.PreferencesModel;
-import com.example.sonu_pc.visit.model.SurveyModel;
-import com.example.sonu_pc.visit.model.SurveyPreferenceModel;
+import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
+import com.example.sonu_pc.visit.model.data_model.SurveyModel;
+import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
+import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +39,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     private List<EditText> mEditTexts;
 
-    private SurveyPreferenceModel surveyPreferenceModel;
+    private SurveyPreferenceModel mSurveyPreferenceModel;
 
     // Map for storing survey ques, ans
 
@@ -48,11 +47,11 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String mPrefObjJson;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
@@ -66,7 +65,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     public static SurveyFragment newInstance(String param1, String param2) {
         SurveyFragment fragment = new SurveyFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PREF_OBJ_JSON, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -76,8 +75,12 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
+            mSurveyPreferenceModel = getSurveyPreferenceModel(mPrefObjJson);
+            Log.d(TAG, "survey pref obj = " +  mSurveyPreferenceModel.getSurvey_title());
+            Log.d(TAG, "survey pref obj = " +  mSurveyPreferenceModel.getWipe());
         }
         mEditTexts = new ArrayList<>();
     }
@@ -85,13 +88,13 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        SharedPreferences sharedPreferences = getActivity()
+        /*SharedPreferences sharedPreferences = getActivity()
                         .getSharedPreferences(getString(R.string.REMOTE_CONFIG_PREFERENCE), Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String preference_object_json = sharedPreferences.getString(getString(R.string.CONFIGURATION_PREFERENCE_KEY), "");
 
         PreferencesModel preferencesModel = gson.fromJson(preference_object_json, PreferencesModel.class);
-        surveyPreferenceModel = preferencesModel.getSurveyPreferenceModel();
+        mSurveyPreferenceModel = preferencesModel.getSurveyPreferenceModel();*/
 
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_survey, container, false);
@@ -107,10 +110,10 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mEditTexts.add(mEditText3);
         mEditTexts.add(mEditText4);
 
-        mTextViewTitle.setText(surveyPreferenceModel.getSurvey_title());
+        mTextViewTitle.setText(mSurveyPreferenceModel.getSurvey_title());
 
         // Remove the unnecessary edit texts
-        for(int i = surveyPreferenceModel.getSurvey_item_name().size(); i <= 3; i++){
+        for(int i = mSurveyPreferenceModel.getSurvey_item_name().size(); i <= 3; i++){
             mEditTexts.get(i).setVisibility(View.GONE);
         }
 
@@ -122,14 +125,19 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mButtonNext.setOnClickListener(this);
 
         // Set the hint text for visible edit texts
-        for(int i = 0; i < surveyPreferenceModel.getSurvey_item_name().size(); i++){
-            mEditTexts.get(i).setHint(surveyPreferenceModel.getSurvey_item_name().get(i));
+        for(int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++){
+            mEditTexts.get(i).setHint(mSurveyPreferenceModel.getSurvey_item_name().get(i));
             mEditTexts.get(i).setOnTouchListener(this);
         }
 
         return view;
     }
 
+    private SurveyPreferenceModel getSurveyPreferenceModel(String json){
+        Gson gson = GsonUtils.getGsonParser();
+        SurveyPreferenceModel surveyPreferenceModel = gson.fromJson(json, SurveyPreferenceModel.class);
+        return surveyPreferenceModel;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -179,10 +187,10 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     }
 
     private void createOptionsDialog(final int i){
-        ArrayList<String> optionsList = surveyPreferenceModel.getSurvey_item_options().get(i);
+        ArrayList<String> optionsList = mSurveyPreferenceModel.getSurvey_item_options().get(i);
         final String [] options = optionsList.toArray(new String[optionsList.size()]);
 
-        final String survey_item_name = surveyPreferenceModel.getSurvey_item_name().get(i);
+        final String survey_item_name = mSurveyPreferenceModel.getSurvey_item_name().get(i);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(survey_item_name);
@@ -225,7 +233,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
         boolean isGood = true;
 
-        for(int i = 0; i < surveyPreferenceModel.getSurvey_item_name().size(); i++){
+        for(int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++){
             EditText et = mEditTexts.get(i);
             String input = et.getText().toString();
             if(TextUtils.isEmpty(input)){

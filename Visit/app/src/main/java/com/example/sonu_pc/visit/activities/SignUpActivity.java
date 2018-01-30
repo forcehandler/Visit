@@ -12,10 +12,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,10 +29,11 @@ import com.example.sonu_pc.visit.fragments.ThankYouFragment;
 import com.example.sonu_pc.visit.fragments.VisiteeInfoFragment;
 import com.example.sonu_pc.visit.fragments.VisitorInfoFragment;
 import com.example.sonu_pc.visit.model.CouponModel;
-import com.example.sonu_pc.visit.model.DataModel;
-import com.example.sonu_pc.visit.model.PreferencesModel;
-import com.example.sonu_pc.visit.model.SurveyModel;
-import com.example.sonu_pc.visit.model.TextInputModel;
+import com.example.sonu_pc.visit.model.data_model.DataModel;
+import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
+import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
+import com.example.sonu_pc.visit.model.data_model.SurveyModel;
+import com.example.sonu_pc.visit.model.data_model.TextInputModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -82,6 +81,8 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
 
     private PreferencesModel preferencesModel;
 
+    private MasterWorkflow masterWorkflow;
+
     private ConstraintLayout mConstraintLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,9 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
 
         initFirestore();
 
+        initMasterWorkflow();
+
+
         // Config values from Realtime database
         fillRemoteStagePreferences();
 
@@ -128,6 +132,18 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
         mFirestore = FirebaseFirestore.getInstance();
 
         // Enable offline
+    }
+
+    private void initMasterWorkflow(){
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String workflow_json = preferences.getString(getString(R.string.PREF_KEY_MASTERWORKFLOW), "NOPREF");
+        if(workflow_json == "NOPREF"){
+            Log.e(TAG, "Could not fetch the workflow json from sharedpreferences");
+        }
+        else{
+            masterWorkflow = gson.fromJson(workflow_json, MasterWorkflow.class);
+        }
     }
 
     private void initRemoteConfig(){
@@ -432,7 +448,7 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-wipe, and download URL.
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     Log.d(TAG, downloadUrl.toString());
                     showSnackbar("Upload successful @ url = " + downloadUrl);
@@ -478,7 +494,7 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
         couponModel.getVisitor_face_photo().compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();*/
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, PrinterActivity.class);
         intent.putExtra(getString(R.string.intent_key_coupon), couponModel);
         startActivity(intent);
     }

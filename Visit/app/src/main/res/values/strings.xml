@@ -124,5 +124,11 @@
 
     <string name="speech_not_supported">Sorry! Your device doesn\'t support speech input</string>
     <string name="TEXT_FROM_SPEECH">text_output</string>
-    <string name="speech_dialog_title">title</string>
+    <string name="speech_dialog_title">type</string>
+    <string name="PREF_FILE_MASTERWORKFLOW">PREF_FILE_MASTERWORKFLOW</string>
+    <string name="PREF_KEY_MASTERWORKFLOW">PREF_KEY_MASTERWORKFLOW</string>
+    <string name="INTENT_WORKFLOW_SELECT_KEY">INTENT_WORKFLOW_SELECT_KEY</string>
+    <string name="CLASS_TEXTINPUT">CLASS_TEXTINPUT</string>
+    <string name="CLASS_SURVEYINPUT">CLASS_SURVEYINPUT</string>
+    <string name="CLASS_THANKYOU">CLASS_THANKYOU</string>
 </resources>

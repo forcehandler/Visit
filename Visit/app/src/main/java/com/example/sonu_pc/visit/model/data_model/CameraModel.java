@@ -1,4 +1,4 @@
-package com.example.sonu_pc.visit.model;
+package com.example.sonu_pc.visit.model.data_model;
 
 /**
  * Created by sonupc on 14-01-2018.

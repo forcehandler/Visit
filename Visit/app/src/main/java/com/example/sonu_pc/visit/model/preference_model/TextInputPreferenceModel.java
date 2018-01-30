@@ -1,16 +1,16 @@
-package com.example.sonu_pc.visit.model;
+package com.example.sonu_pc.visit.model.preference_model;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by sonupc on 14-01-2018.
  */
 
-public class TextInputPreferenceModel {
+public class TextInputPreferenceModel extends Preference{
 
     private String page_title;
     private List<String> hints;
+    public final String wipe = "CLASS_TEXTINPUT";
 
     public TextInputPreferenceModel() {
     }
@@ -35,4 +35,9 @@ public class TextInputPreferenceModel {
     public void setHints(List<String> hints) {
         this.hints = hints;
     }
+
+    public String getWipe() {
+        return wipe;
+    }
 }
+

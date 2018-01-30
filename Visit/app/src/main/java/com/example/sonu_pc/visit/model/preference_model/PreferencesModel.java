@@ -1,4 +1,8 @@
-package com.example.sonu_pc.visit.model;
+package com.example.sonu_pc.visit.model.preference_model;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Created by sonupc on 02-01-2018.
@@ -10,17 +14,19 @@ public class PreferencesModel {
 
     private boolean stage1, stage2, stage3, stage4, stage5, stage6;
     private String termsAndCond;
+    private String instituteEmail;
     private long signup_time;        // not really required
 
     private SurveyPreferenceModel surveyPreferenceModel;
     private TextInputPreferenceModel textInputPreferenceModel;
 
+    // Map of order of screens and the Preference of the screen
+    private ArrayList<Preference> order_of_screens;
+
     public PreferencesModel() {
     }
 
-    public PreferencesModel(boolean stage1, boolean stage2, boolean stage3, boolean stage4, boolean stage5, boolean stage6,
-                            String termsAndCond, long signup_time, SurveyPreferenceModel surveyPreferenceModel,
-                            TextInputPreferenceModel textInputPreferenceModel) {
+    public PreferencesModel(boolean stage1, boolean stage2, boolean stage3, boolean stage4, boolean stage5, boolean stage6, String termsAndCond, String instituteEmail, long signup_time, SurveyPreferenceModel surveyPreferenceModel, TextInputPreferenceModel textInputPreferenceModel, ArrayList<Preference> order_of_screens) {
         this.stage1 = stage1;
         this.stage2 = stage2;
         this.stage3 = stage3;
@@ -28,10 +34,13 @@ public class PreferencesModel {
         this.stage5 = stage5;
         this.stage6 = stage6;
         this.termsAndCond = termsAndCond;
+        this.instituteEmail = instituteEmail;
         this.signup_time = signup_time;
         this.surveyPreferenceModel = surveyPreferenceModel;
         this.textInputPreferenceModel = textInputPreferenceModel;
+        this.order_of_screens = order_of_screens;
     }
+
 
     public boolean isStage1() {
         return stage1;
@@ -111,5 +120,21 @@ public class PreferencesModel {
 
     public void setTextInputPreferenceModel(TextInputPreferenceModel textInputPreferenceModel) {
         this.textInputPreferenceModel = textInputPreferenceModel;
+    }
+
+    public String getInstituteEmail() {
+        return instituteEmail;
+    }
+
+    public void setInstituteEmail(String instituteEmail) {
+        this.instituteEmail = instituteEmail;
+    }
+
+    public ArrayList<Preference> getOrder_of_screens() {
+        return order_of_screens;
+    }
+
+    public void setOrder_of_screens(ArrayList<Preference> order_of_screens) {
+        this.order_of_screens = order_of_screens;
     }
 }

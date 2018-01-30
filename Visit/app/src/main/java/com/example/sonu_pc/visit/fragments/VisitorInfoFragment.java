@@ -2,7 +2,6 @@ package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -19,14 +18,10 @@ import android.widget.Toast;
 
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.SpeechRecognitionHelperActivity;
-import com.example.sonu_pc.visit.model.PreferencesModel;
-import com.example.sonu_pc.visit.model.SurveyPreferenceModel;
-import com.example.sonu_pc.visit.model.TextInputModel;
-import com.example.sonu_pc.visit.model.TextInputPreferenceModel;
-import com.example.sonu_pc.visit.utils.VisitUtils;
+import com.example.sonu_pc.visit.model.data_model.TextInputModel;
+import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
+import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +35,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
     private static final String ARG_PARAM2 = "param2";
 
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
@@ -54,8 +49,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
     private TextInputPreferenceModel mTextInputPreferenceModel;
 
-
-    private String mParam1;
+    private String mPrefObjJson;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
@@ -71,7 +65,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     public static VisitorInfoFragment newInstance(String param1, String param2) {
         VisitorInfoFragment fragment = new VisitorInfoFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PREF_OBJ_JSON, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
@@ -81,18 +75,31 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            Log.d(TAG, "onCreate()");
+            mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
             mParam2 = getArguments().getString(ARG_PARAM2);
+            mTextInputPreferenceModel = (TextInputPreferenceModel) getTextInputPreferenceModelFromJson(mPrefObjJson);
+            Log.d(TAG, "text pref obj = " +  mTextInputPreferenceModel.getPage_title());
+            Log.d(TAG, "text pref obj = " +  mTextInputPreferenceModel.getWipe());
+            Log.d(TAG, "text pref obj = " +  mTextInputPreferenceModel.getHints());
         }
         mEditTexts = new ArrayList<>();
+    }
+
+    private TextInputPreferenceModel getTextInputPreferenceModelFromJson(String json){
+        Gson gson = GsonUtils.getGsonParser();
+        TextInputPreferenceModel textInputPreferenceModel = gson.fromJson(json, TextInputPreferenceModel.class);
+        return textInputPreferenceModel;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        PreferencesModel preferencesModel = VisitUtils.getPreferences(getActivity());
-        mTextInputPreferenceModel = preferencesModel.getTextInputPreferenceModel();
+
+        //TODO: testing the workflow model
+       /* PreferencesModel preferencesModel = VisitUtils.getPreferences(getActivity());
+        mTextInputPreferenceModel = preferencesModel.getTextInputPreferenceModel();*/
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_visitor_info, container, false);
@@ -126,6 +133,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
         microphone.setOnClickListener(this);
 
+        Log.d(TAG, "onCreateView()");
         return view;
     }
 
@@ -162,7 +170,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             if(isEverythingAllRight()) {
                 if (mListener != null) {
 
-                    mListener.onFragmentInteraction(1, 1);
                     if (mVisitorListener != null) {
                         String string_name = mEditText1.getText().toString();
                         String string_company = mEditText2.getText().toString();
@@ -178,6 +185,8 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                         textInputModel.setText_input_data(text_data);
                         mVisitorListener.onTextInputInteraction(textInputModel);
                     }
+                    // First send out the info and then call for change of fragment
+                    mListener.onFragmentInteraction(1, 1);
                 }
             }
 
@@ -286,6 +295,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     }
     public interface OnVisitorInteractionListener {
 
+        //TODO: get rid of the onVisitorInteraction based on the Coupon model
         void onVisitorInteraction(String name, String company, String phoneNo);
         void onTextInputInteraction(TextInputModel textInputModel);
     }

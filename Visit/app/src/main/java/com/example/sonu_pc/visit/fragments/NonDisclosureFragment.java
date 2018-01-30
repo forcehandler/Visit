@@ -122,7 +122,7 @@ public class NonDisclosureFragment extends Fragment implements View.OnClickListe
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument wipe and name
         void onFragmentInteraction(int direction, int stageNo);
     }
 }

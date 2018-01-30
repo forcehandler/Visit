@@ -160,12 +160,12 @@ public class VisiteeInfoFragment extends Fragment implements View.OnClickListene
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument wipe and name
         void onFragmentInteraction(int direction, int stageNo);
     }
 
     public interface OnVisiteeInteractionListener {
-        // TODO: Update argument type and name
+        // TODO: Update argument wipe and name
         void onVisiteeInteraction(String name, String purpose, String time);
     }
 }

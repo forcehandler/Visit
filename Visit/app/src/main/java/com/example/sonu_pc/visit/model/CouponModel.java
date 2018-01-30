@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.sonu_pc.visit.model.data_model.SurveyModel;
 import com.google.firebase.firestore.Exclude;
 
 /**

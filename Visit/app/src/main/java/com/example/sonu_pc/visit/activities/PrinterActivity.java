@@ -24,8 +24,8 @@ import com.example.sonu_pc.visit.ShowMsg;
 import com.example.sonu_pc.visit.model.CouponModel;
 
 
-public class MainActivity extends Activity implements ReceiveListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
+public class PrinterActivity extends Activity implements ReceiveListener {
+    private static final String TAG = PrinterActivity.class.getSimpleName();
 
     private Context mContext = null;
     private EditText mEditTarget = null;
@@ -532,7 +532,7 @@ public class MainActivity extends Activity implements ReceiveListener {
 
 
                 //Move back to the first activity
-                Intent intent = new Intent(MainActivity.this, MasterActivity.class);
+                Intent intent = new Intent(PrinterActivity.this, MasterActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
