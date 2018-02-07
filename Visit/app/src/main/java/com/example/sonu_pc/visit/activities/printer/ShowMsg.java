@@ -1,4 +1,4 @@
-package com.example.sonu_pc.visit;
+package com.example.sonu_pc.visit.activities.printer;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.Epos2CallbackCode;
+import com.example.sonu_pc.visit.R;
 
 public class ShowMsg {
     public static void showException(Exception e, String method, Context context) {

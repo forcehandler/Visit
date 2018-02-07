@@ -21,5 +21,10 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    
+    <style name="AnotherStyle" >
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/holo_blue_light</item>
+    </style>
 
 </resources>

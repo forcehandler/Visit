@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.speech.RecognizerIntent;
-import android.support.v7.app.AppCompatActivity;
+import android.speech.tts.TextToSpeech;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -13,12 +13,15 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class SpeechRecognitionHelperActivity extends Activity {
+public class SpeechRecognitionHelperActivity extends Activity implements TextToSpeech.OnInitListener{
 
     private static final String TAG = SpeechRecognitionHelperActivity.class.getSimpleName();
 
     private static final int REQ_CODE_SPEECH_INPUT = 121;
+    private static final String REQ_CODE_TEXT_UTTERANCE = "Speech_recognition_helper_voice";
+    private TextToSpeech textToSpeech;
 
+    private String voice_input_hint_text;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,9 +29,10 @@ public class SpeechRecognitionHelperActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
+        textToSpeech = new TextToSpeech(this, this);
+
         Intent intent = getIntent();
-        String title = intent.getStringExtra(getString(R.string.speech_dialog_title));
-        promptSpeechInput(title);
+        voice_input_hint_text = intent.getStringExtra(getString(R.string.speech_dialog_title));
     }
 
 
@@ -72,5 +76,38 @@ public class SpeechRecognitionHelperActivity extends Activity {
         Intent resultIntent = new Intent();
         setResult(Activity.RESULT_CANCELED, resultIntent);
         finish();
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = textToSpeech.setLanguage(Locale.US);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+                speakOut(voice_input_hint_text);
+                promptSpeechInput(voice_input_hint_text);               // When TTS is ready, ask for start voice input
+            }
+
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
+    }
+
+    private void speakOut(String text){
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, REQ_CODE_TEXT_UTTERANCE);
+    }
+
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown tts!
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+        super.onDestroy();
     }
 }

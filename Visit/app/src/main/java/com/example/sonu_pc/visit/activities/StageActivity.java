@@ -70,7 +70,7 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
         private ArrayList<Preference> mOrderOfScreens;
         private Map<String, Model> mDataModels;
 
-        private static int curr_stage = 0;
+        private int curr_stage = 0;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {

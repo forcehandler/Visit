@@ -1,0 +1,31 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.sonu_pc.visit.fragments.VoiceServicesDialog">
+
+    <TextView
+        android:id="@+id/tv_speech_hint_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:paddingBottom="20dp"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/black"
+        android:text="Tell me your name" />
+
+    <TextView
+        android:id="@+id/tv_listening_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="0dp"
+        android:paddingBottom="24dp"
+        android:text="Start Speaking after the voice hint."/>
+    
+
+</LinearLayout>

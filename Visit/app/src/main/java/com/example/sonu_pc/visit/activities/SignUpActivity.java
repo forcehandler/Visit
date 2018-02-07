@@ -21,6 +21,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.activities.printer.PrinterActivity;
 import com.example.sonu_pc.visit.fragments.FaceIdFragment;
 import com.example.sonu_pc.visit.fragments.IdScanFragment;
 import com.example.sonu_pc.visit.fragments.NonDisclosureFragment;

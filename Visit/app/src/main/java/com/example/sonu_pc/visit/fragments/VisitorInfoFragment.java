@@ -3,6 +3,9 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,10 +29,11 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 
-public class VisitorInfoFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
+public class VisitorInfoFragment extends Fragment implements View.OnClickListener, View.OnTouchListener, TextToSpeech.OnInitListener {
 
     private static final String TAG = VisitorInfoFragment.class.getSimpleName();
 
@@ -54,6 +58,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
     private OnFragmentInteractionListener mListener;
     private OnVisitorInteractionListener mVisitorListener;
+
 
     private static final int REQ_CODE_SPEECH_INPUT = 111;
 
@@ -84,6 +89,10 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             Log.d(TAG, "text pref obj = " +  mTextInputPreferenceModel.getHints());
         }
         mEditTexts = new ArrayList<>();
+
+
+        textToSpeech = new TextToSpeech(getContext(),this);
+        textToSpeech.setOnUtteranceProgressListener(new ttsListener());
     }
 
     private TextInputPreferenceModel getTextInputPreferenceModelFromJson(String json){
@@ -193,9 +202,36 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         }
         if(v == microphone){
             Log.v(TAG, "mic pressed");
-            getTextFromSpeech();
+            // TODO: testing new speech listener class
+            //getTextFromSpeech();
+
+            //test_getTextFromSpeech();
+            showDialog();
+
         }
 
+    }
+
+    VoiceServicesDialog voiceServicesDialogFragment;
+
+    public void showDialog() {
+        // Create the fragment and show it as a dialog.
+        voiceServicesDialogFragment = new VoiceServicesDialog();
+        voiceServicesDialogFragment.setTargetFragment(this, 1337);
+        voiceServicesDialogFragment.show(getFragmentManager(), "dialog");
+
+        Log.d(TAG, "started the speech to text dialog");
+        Log.d(TAG, "Starting text to speech");
+
+        test_getTextFromSpeech();
+
+    }
+
+
+    public void speechDialogResult(String s){
+        Log.d(TAG, "received data from speech dialog");
+        mFocusedEditText.setText(s);
+        moveFocusToNextEditText();
     }
 
     private void getTextFromSpeech(){
@@ -206,6 +242,28 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
         }
     }
+
+
+    private void test_getTextFromSpeech(){
+        if(mFocusedEditText != null){
+            String hint = mFocusedEditText.getHint().toString();
+            //===============
+            if(is_tts_initialized) {
+                speakOut(hint);
+            }
+            else {
+                Log.e(TAG, "TTS is not initialized. Check test_getText from speech method");
+            }
+
+            //===============
+            //TODO: commenting it for the new dialog fragment which is called when the utterance
+            // is complete
+            /*Intent intent = new Intent(getActivity(), voiceRecognitionTest.class);
+            //intent.putExtra(getString(R.string.speech_dialog_title), hint);
+            startActivity(intent);*/
+        }
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -289,6 +347,88 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         return false;
     }
 
+    //==============================================================================================
+    private TextToSpeech textToSpeech;
+
+    int i = 0;
+    boolean is_tts_initialized = false;
+    private static final String REQ_CODE_TEXT_UTTERANCE = "Speech_recognition_helper_voice";
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+
+            int result = textToSpeech.setLanguage(Locale.US);
+
+            if (result == TextToSpeech.LANG_MISSING_DATA
+                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "This Language is not supported");
+            } else {
+                is_tts_initialized = true;
+            }
+
+        } else {
+            Log.e("TTS", "Initialization Failed!");
+        }
+    }
+
+    private void speakOut(String text){
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, REQ_CODE_TEXT_UTTERANCE);
+    }
+
+
+    class ttsListener extends UtteranceProgressListener {
+        @Override
+        public void onStart(final String s) {
+
+            appendLog("onSpeechStart " + s);
+        }
+
+        @Override
+        public void onDone(final String s) {
+
+            appendLog("onSpeechDone " + s);
+
+            //startRecognition();
+
+
+            //speakOut("another stuff " + i++);
+
+            appendLog("starting recognition");
+
+            if(voiceServicesDialogFragment != null){
+                appendLog("starting voice recognition");
+                voiceServicesDialogFragment.startRecognition();
+            }
+            else {
+                Log.d(TAG, "voiceServicesDialog is null in onDone of text to speech");
+            }
+
+        }
+
+        @Override
+        public void onError(String s) {
+            appendLog("onError " + s);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        // Don't forget to shutdown tts!
+        Log.d(TAG, "onDestroy");
+        if (textToSpeech != null) {
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+            is_tts_initialized = false;
+        }
+        super.onDestroy();
+    }
+
+    private void appendLog(String s){
+        Log.d(TAG, s);
+    }
+
+    //==============================================================================================
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(int direction, int stageNo);
@@ -299,4 +439,5 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         void onVisitorInteraction(String name, String company, String phoneNo);
         void onTextInputInteraction(TextInputModel textInputModel);
     }
+
 }

@@ -333,10 +333,13 @@ public class SetupActivity extends AppCompatActivity {
 
         ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, transition_name);
         Intent intent = new Intent(this, MasterActivity.class); // Currently the naming scheme is screwed
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        // Clearing the flags for animation sake
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // TODO: Fix the class naming scheme
         startActivity(intent, activityOptionsCompat.toBundle());
-        supportFinishAfterTransition();
+
+        // TODO: fix the activity finish animation for facilitating clean shared element view transition
+        //supportFinishAfterTransition();
     }
 
 
@@ -389,10 +392,10 @@ public class SetupActivity extends AppCompatActivity {
                     for(DataSnapshot screen : order_of_screens.getChildren()){
                         Log.d(TAG, "screen key = " + screen.getKey());
 
-                        // TODO: for testing only
+                        /*// for testing only
                         for(DataSnapshot ds : screen.getChildren()){
                             Log.d(TAG, "screen attrib = " + ds.getKey());
-                        }
+                        }*/
 
 
                         String type = screen.child("wipe").getValue(String.class);

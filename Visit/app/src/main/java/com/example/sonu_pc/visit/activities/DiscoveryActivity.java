@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import com.epson.epos2.discovery.FilterOption;
 import com.epson.epos2.discovery.DeviceInfo;
 import com.epson.epos2.Epos2Exception;
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.ShowMsg;
+import com.example.sonu_pc.visit.activities.printer.ShowMsg;
 
 public class DiscoveryActivity extends Activity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
