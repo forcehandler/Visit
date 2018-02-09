@@ -531,13 +531,6 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
         Log.d(TAG, "obtained id photo");
     }
 
-    @Override
-    public void onVisitorInteraction(String name, String company, String phoneNo) {
-        Log.d(TAG, "obtained visitor info");
-
-        couponModel.setVisitor_name(name);
-        couponModel.setCompany_name(company);
-    }
 
     @Override
     public void onTextInputInteraction(TextInputModel textInputModel) {

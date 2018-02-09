@@ -1,6 +1,5 @@
 package com.example.sonu_pc.visit.activities;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -17,19 +16,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.fragments.SurveyFragment;
-import com.example.sonu_pc.visit.model.preference_model.Child1;
-import com.example.sonu_pc.visit.model.preference_model.Child2;
-import com.example.sonu_pc.visit.model.preference_model.Listbhola;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
-import com.example.sonu_pc.visit.model.preference_model.Parent;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
+import com.example.sonu_pc.visit.services.TextToSpeechService;
 import com.example.sonu_pc.visit.utils.GsonUtils;
-import com.example.sonu_pc.visit.utils.RuntimeTypeAdapterFactory;
 import com.example.sonu_pc.visit.utils.VisitUtils;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -41,12 +35,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +71,8 @@ public class SetupActivity extends AppCompatActivity {
     }
 
     private void startSigninSequence(){
+
+        Log.d(TAG, "starting sign in sequence");
         FirebaseApp.initializeApp(this);
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
@@ -93,8 +85,8 @@ public class SetupActivity extends AppCompatActivity {
             //getConfigValues();
 
             // TODO: for testing only, added always on registration and commented get config vavlues
-            test_registerInstitutionForRemoteConfig();
-            //test_getConfigValues();
+            //test_registerInstitutionForRemoteConfig();
+            test_getConfigValues();
 
             //test_firebase_so_ques();
 
@@ -106,6 +98,14 @@ public class SetupActivity extends AppCompatActivity {
                     AuthUI.getInstance().createSignInIntentBuilder().build(),
                     RC_SIGN_IN);
         }
+
+        startTtsService();
+    }
+
+    private void startTtsService(){
+        Log.d(TAG, "start TtsService");
+        Intent serviceIntent = new Intent(this, TextToSpeechService.class);
+        this.startService(serviceIntent);
     }
 
     @Override
@@ -135,85 +135,8 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-    private void test_firebase_so_ques(){
-        Child1 child1 = new Child1();
-        child1.setC1title("c1");
-        Child2 child2 = new Child2();
-        child2.setC2title("c2");
-        ArrayList<Parent> list = new ArrayList<>();
-        list.add(child1);
-        list.add(child2);
-
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mDatabaseReference.child("test")
-                .setValue(list)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Successfully registered on realtime database");
-                        get_firebase_so_ques();
-                    }
-
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "failed to add preference object", e);
-                    }
-                });
 
 
-    }
-
-    private void get_firebase_so_ques(){
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference("test");
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<ArrayList<Parent>> t = new GenericTypeIndicator<ArrayList<Parent>>() {};
-                ArrayList<Parent> yourStringArray = dataSnapshot.getValue(t);
-                List<Parent> list = dataSnapshot.getValue(t);
-                Log.d(TAG, "Successfully obtained the test list");
-                testTheList(list);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void testTheList(List<Parent> list){
-
-        for(Parent p : list){
-            Log.d(TAG, "oolala");
-            if(p instanceof  Child1){
-                Log.d(TAG, "c1 child");
-            }
-            if(p instanceof Child2){
-                Log.d(TAG, "c2 child");
-            }
-        }
-
-
-        Child1 child1 = new Child1();
-        child1.setC1title("c1");
-        Child2 child2 = new Child2();
-        child2.setC2title("c2");
-        ArrayList<Parent> list1 = new ArrayList<>();
-        list1.add(child1);
-        list1.add(child2);
-        for(Parent p : list1){
-            Log.d(TAG, "wohoo");
-            if(p instanceof  Child1){
-                Log.d(TAG, "c1 child");
-            }
-            if(p instanceof Child2){
-                Log.d(TAG, "c2 child");
-            }
-        }
-    }
 
     private void registerInstitutionForRemoteConfig(){
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
@@ -328,11 +251,14 @@ public class SetupActivity extends AppCompatActivity {
 
     private void moveToSignupActivity(){
 
+        Log.d(TAG, "sign in and pref download complete, moving to stage acitivity");
         View sharedView = mImageView;
         String transition_name = mImageView.getTransitionName();
 
         ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedView, transition_name);
-        Intent intent = new Intent(this, MasterActivity.class); // Currently the naming scheme is screwed
+
+        // TODO: Integrating Welcome fragment in stage activity
+        Intent intent = new Intent(this, StageActivity.class); // Currently the naming scheme is screwed
         // Clearing the flags for animation sake
         //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // TODO: Fix the class naming scheme
@@ -368,7 +294,7 @@ public class SetupActivity extends AppCompatActivity {
 
 
     private void test_getConfigValues(){
-
+        Log.d(TAG, "getting config values");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid());
         mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -441,80 +367,7 @@ public class SetupActivity extends AppCompatActivity {
 
             }
         });
-       /* mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid())
-                .child("workflows_map").child("Enquiry_workflow").child("order_of_screens");
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "children = " + snapshot.getValue());
-                    String wipe = snapshot.child("wipe").getValue(String.class);
-                    if(getString(R.string.CLASS_TEXTINPUT).equals(wipe)){
-                        Log.d(TAG, "got the text input class");
-                        TextInputPreferenceModel textInputPreferenceModel = snapshot.getValue(TextInputPreferenceModel.class);
-                        Log.d(TAG, "textclass = " + textInputPreferenceModel.getPage_title());
-                    }
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });*/
     }
 
-
-
-
-    /*private void seeJsonObject() {
-        RuntimeTypeAdapterFactory<Parent> adapter =
-                RuntimeTypeAdapterFactory
-                        .of(Parent.class)
-                        .registerSubtype(Child1.class)
-                        .registerSubtype(Child2.class);
-
-        List<Parent> list = new ArrayList<>();
-        Child1 ch1 = new Child1();
-        ch1.setC1title("ch1c1");
-        Child2 ch2 = new Child2();
-        ch2.setC2title("ch2c2");
-        list.add(ch1);
-        list.add(ch2);
-
-        Listbhola bhola = new Listbhola();
-        bhola.setList(list);
-
-        Gson gson2=new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
-        Gson gson = new Gson();
-        Log.d(TAG, "---------------------");
-        Log.d(TAG, gson.toJson(bhola));
-        Log.d(TAG, "---------------------");
-        Log.d(TAG, gson2.toJson(bhola));
-    }*/
-
-    /*private void seeJsonObject(MasterWorkflow masterWorkflow) {
-        RuntimeTypeAdapterFactory<Preference> adapter =
-                RuntimeTypeAdapterFactory
-                        .of(Preference.class)
-                        .registerSubtype(TextInputPreferenceModel.class)
-                        .registerSubtype(SurveyPreferenceModel.class);
-
-
-        Gson gson2=new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();
-        Gson gson = new Gson();
-        Log.d(TAG, "---------------------");
-        Log.d(TAG, gson.toJson(masterWorkflow));
-        Log.d(TAG, "---------------------");
-        Log.d(TAG, gson2.toJson(masterWorkflow));
-
-
-        SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        String config_string = gson2.toJson(masterWorkflow);
-        Log.d(TAG, config_string);
-        editor.putString(getString(R.string.PREF_KEY_MASTERWORKFLOW), config_string);
-        editor.putString("key", "testvalue");
-        editor.commit();
-    }*/
 }

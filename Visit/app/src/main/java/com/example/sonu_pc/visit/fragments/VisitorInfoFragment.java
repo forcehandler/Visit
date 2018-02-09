@@ -23,6 +23,7 @@ import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.SpeechRecognitionHelperActivity;
 import com.example.sonu_pc.visit.model.data_model.TextInputModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
+import com.example.sonu_pc.visit.services.TextToSpeechService;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
 
@@ -33,7 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 
 
-public class VisitorInfoFragment extends Fragment implements View.OnClickListener, View.OnTouchListener, TextToSpeech.OnInitListener {
+public class VisitorInfoFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
 
     private static final String TAG = VisitorInfoFragment.class.getSimpleName();
 
@@ -91,8 +92,14 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         mEditTexts = new ArrayList<>();
 
 
-        textToSpeech = new TextToSpeech(getContext(),this);
-        textToSpeech.setOnUtteranceProgressListener(new ttsListener());
+        //##############################################################################
+
+        //TODO : Remove this when the new tts service is working perfectly
+        //textToSpeech = new TextToSpeech(getContext(),this);
+        //textToSpeech.setOnUtteranceProgressListener(new ttsListener());
+
+        initTtsObject();
+        //##############################################################################
     }
 
     private TextInputPreferenceModel getTextInputPreferenceModelFromJson(String json){
@@ -105,8 +112,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-        //TODO: testing the workflow model
+       //TODO: testing the workflow model
        /* PreferencesModel preferencesModel = VisitUtils.getPreferences(getActivity());
         mTextInputPreferenceModel = preferencesModel.getTextInputPreferenceModel();*/
 
@@ -180,11 +186,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                 if (mListener != null) {
 
                     if (mVisitorListener != null) {
-                        String string_name = mEditText1.getText().toString();
-                        String string_company = mEditText2.getText().toString();
-                        String string_phone = mEditText3.getText().toString();
-                        Log.d(TAG, string_name + ", " + string_company + ", " + string_phone);
-                        mVisitorListener.onVisitorInteraction(string_name, string_company, string_phone);
 
                         TextInputModel textInputModel = new TextInputModel();
                         Map<String, String> text_data = new HashMap<>();
@@ -202,12 +203,10 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         }
         if(v == microphone){
             Log.v(TAG, "mic pressed");
-            // TODO: testing new speech listener class
-            //getTextFromSpeech();
 
             //test_getTextFromSpeech();
             showDialog();
-
+            speakSelectedHint();
         }
 
     }
@@ -223,7 +222,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "started the speech to text dialog");
         Log.d(TAG, "Starting text to speech");
 
-        test_getTextFromSpeech();
+        //speakSelectedHint();
 
     }
 
@@ -234,33 +233,18 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         moveFocusToNextEditText();
     }
 
-    private void getTextFromSpeech(){
-        if(mFocusedEditText != null){
-            String hint = mFocusedEditText.getHint().toString();
-            Intent intent = new Intent(getActivity(), SpeechRecognitionHelperActivity.class);
-            intent.putExtra(getString(R.string.speech_dialog_title), hint);
-            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-        }
-    }
 
-
-    private void test_getTextFromSpeech(){
+    private void speakSelectedHint(){
         if(mFocusedEditText != null){
             String hint = mFocusedEditText.getHint().toString();
             //===============
-            if(is_tts_initialized) {
+            if(textToSpeech != null) {
                 speakOut(hint);
             }
             else {
                 Log.e(TAG, "TTS is not initialized. Check test_getText from speech method");
             }
 
-            //===============
-            //TODO: commenting it for the new dialog fragment which is called when the utterance
-            // is complete
-            /*Intent intent = new Intent(getActivity(), voiceRecognitionTest.class);
-            //intent.putExtra(getString(R.string.speech_dialog_title), hint);
-            startActivity(intent);*/
         }
     }
 
@@ -350,31 +334,43 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     //==============================================================================================
     private TextToSpeech textToSpeech;
 
-    int i = 0;
-    boolean is_tts_initialized = false;
+    private void initTtsObject(){
+        Log.d(TAG, "initTTSObject");
+        try {
+            if (textToSpeech == null) {
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "running thread to obtain tts object");
+                        textToSpeech = TextToSpeechService.getVoice();
+                        if(textToSpeech==null) {
+                            Log.d(TAG, "tts object is null from service");
+                            return;
+                        }
+
+                        textToSpeech.setLanguage(new Locale("en", "IN"));
+                        textToSpeech.setOnUtteranceProgressListener(new ttsListener());
+                    }
+                }).start();
+
+            }
+        }
+        catch(Exception e)
+        {
+            Log.e(TAG,"Error occurred in initTtsObject");
+            e.printStackTrace();
+        }
+
+    }
+
     private static final String REQ_CODE_TEXT_UTTERANCE = "Speech_recognition_helper_voice";
 
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-
-            int result = textToSpeech.setLanguage(Locale.US);
-
-            if (result == TextToSpeech.LANG_MISSING_DATA
-                    || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "This Language is not supported");
-            } else {
-                is_tts_initialized = true;
-            }
-
-        } else {
-            Log.e("TTS", "Initialization Failed!");
-        }
-    }
 
     private void speakOut(String text){
         textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, REQ_CODE_TEXT_UTTERANCE);
     }
+
 
 
     class ttsListener extends UtteranceProgressListener {
@@ -389,10 +385,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
             appendLog("onSpeechDone " + s);
 
-            //startRecognition();
-
-
-            //speakOut("another stuff " + i++);
 
             appendLog("starting recognition");
 
@@ -412,17 +404,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         }
     }
 
-    @Override
-    public void onDestroy() {
-        // Don't forget to shutdown tts!
-        Log.d(TAG, "onDestroy");
-        if (textToSpeech != null) {
-            textToSpeech.stop();
-            textToSpeech.shutdown();
-            is_tts_initialized = false;
-        }
-        super.onDestroy();
-    }
 
     private void appendLog(String s){
         Log.d(TAG, s);
@@ -435,8 +416,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     }
     public interface OnVisitorInteractionListener {
 
-        //TODO: get rid of the onVisitorInteraction based on the Coupon model
-        void onVisitorInteraction(String name, String company, String phoneNo);
         void onTextInputInteraction(TextInputModel textInputModel);
     }
 

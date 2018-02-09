@@ -19,7 +19,7 @@ import com.example.sonu_pc.visit.fragments.WelcomeFragment;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.google.gson.Gson;
 
-public class MasterActivity extends AppCompatActivity implements WelcomeFragment.OnFragmentInteractionListener {
+public class MasterActivity extends AppCompatActivity implements WelcomeFragment.OnWelcomeFragmentInteractionListener {
 
     private static final String TAG = MasterActivity.class.getSimpleName();
 
@@ -54,7 +54,7 @@ public class MasterActivity extends AppCompatActivity implements WelcomeFragment
 
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onWelcomeFragmentInteraction(String selected_workflow_key) {
 
     }
 }

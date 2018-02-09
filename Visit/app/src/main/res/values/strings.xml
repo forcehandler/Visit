@@ -131,4 +131,7 @@
     <string name="CLASS_TEXTINPUT">CLASS_TEXTINPUT</string>
     <string name="CLASS_SURVEYINPUT">CLASS_SURVEYINPUT</string>
     <string name="CLASS_THANKYOU">CLASS_THANKYOU</string>
+    <string name="collection_ref_institutes">institutes</string>
+    <string name="collection_ref_workflows">workflows</string>
+    <string name="collection_ref_visitors">visitors</string>
 </resources>

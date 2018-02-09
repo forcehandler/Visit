@@ -1,7 +1,6 @@
 package com.example.sonu_pc.visit.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -22,6 +21,7 @@ import com.example.sonu_pc.visit.fragments.SurveyFragment;
 import com.example.sonu_pc.visit.fragments.ThankYouFragment;
 import com.example.sonu_pc.visit.fragments.VisiteeInfoFragment;
 import com.example.sonu_pc.visit.fragments.VisitorInfoFragment;
+import com.example.sonu_pc.visit.fragments.WelcomeFragment;
 import com.example.sonu_pc.visit.model.data_model.Model;
 import com.example.sonu_pc.visit.model.data_model.NewDataModel;
 import com.example.sonu_pc.visit.model.data_model.SurveyModel;
@@ -43,9 +43,12 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-public class StageActivity extends AppCompatActivity implements VisitorInfoFragment.OnFragmentInteractionListener,
+public class StageActivity extends AppCompatActivity implements WelcomeFragment.OnWelcomeFragmentInteractionListener,
+        VisitorInfoFragment.OnFragmentInteractionListener,
         FaceIdFragment.OnFragmentInteractionListener, NonDisclosureFragment.OnFragmentInteractionListener,
         VisitorInfoFragment.OnVisitorInteractionListener,
         VisiteeInfoFragment.OnFragmentInteractionListener, IdScanFragment.OnFragmentInteractionListener ,
@@ -68,9 +71,14 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
         private Preference mCurrentPreference;
 
         private ArrayList<Preference> mOrderOfScreens;
-        private Map<String, Model> mDataModels;
+        private Map<String, Model> mDataModelsMap;
 
         private int curr_stage = 0;
+
+        //######################################################################################
+        private LinkedHashMap<String, String> quesAnsMap;
+        private CollectionReference workflowCollectionRef;
+        private CollectionReference visitorsCollectionRef;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -87,26 +95,44 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
 
             // replacement for coupon model
             mVisitorDataModel = new NewDataModel();
-            mDataModels = new HashMap<>();
+            mDataModelsMap = new HashMap<>();
 
+            //############################################################################
+            quesAnsMap = new LinkedHashMap<>();
+
+
+            //############################################################################
 
             initFirestore();
 
+            // Show the fragment with list of screens.
+            initWelcomeFragment();
+
+            // Obtain MasterWorkflow
             initMasterWorkflow();
 
-            initProjectWorkflow();
-
-            handleFragments();
         }
 
-
         private void initFirestore(){
+            Log.d(TAG, "initFirestore()");
             mFirestore = FirebaseFirestore.getInstance();
 
             // Enable offline
         }
 
+        private void initWelcomeFragment(){
+            Log.d(TAG, "initWelcomeFragment()");
+            // Set the curr_stage to 0
+            curr_stage = 0;
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, WelcomeFragment.newInstance("",""))
+                    .commit();
+        }
+
         private void initMasterWorkflow(){
+
+            Log.d(TAG, "initMasterWorkflow()");
             SharedPreferences preferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), Context.MODE_PRIVATE);
             Gson gson2 = GsonUtils.getGsonParser();
             String workflow_json = preferences.getString(getString(R.string.PREF_KEY_MASTERWORKFLOW), "NOPREF");
@@ -119,10 +145,10 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
             }
         }
 
-        private void initProjectWorkflow(){
-            // get the workflow name
-            Intent intent = getIntent();
-            workflow_name = intent.getStringExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY));
+        private void initSessionWorkflow(String selected_workflow_key){
+
+            workflow_name = selected_workflow_key;
+            Log.d(TAG, "initSessionWorkflow()");
 
             mSelectedWorkflow = masterWorkflow.getWorkflows_map().get(workflow_name);
             if(mSelectedWorkflow instanceof PreferencesModel){
@@ -133,21 +159,16 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
                 Log.e(TAG, "Did not obtain the selected workflow model");
             }
 
+            // TODO: Integrating Welcome fragment in stage activity
+            //Start handling fragments after initializing session workflow given from welcome
+            // fragment
+            handleFragments();
+
         }
 
         private void handleFragments(){
 
-            /*Gson gson2 = GsonUtils.getGsonParser();
-            for(Preference preference : mOrderOfScreens){
-                Log.d(TAG, "galalal");
-
-                if(preference instanceof TextInputPreferenceModel){
-                    Log.d(TAG, "text input pref " + ((TextInputPreferenceModel) preference).getPage_title());
-                }
-                if(preference instanceof SurveyPreferenceModel){
-                    Log.d(TAG, "survey pref " + ((SurveyPreferenceModel) preference).getSurvey_title());
-                }
-            }*/
+            Log.d(TAG, "handleFragments()");
 
             if(curr_stage < mOrderOfScreens.size()) { // if the curr screen no is within req no of screens
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -177,7 +198,13 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
                             .replace(R.id.fragment_container, ThankYouFragment.newInstance(pref_obj_json))
                             .commit();
                     Log.d(TAG, "uploading new visitor data model");
-                    uploadDataModel();
+
+                    // TODO :remove this data model
+                    //uploadDataModel();
+
+
+                    //#################################################################
+                    uploadWorkflow(workflow_name);
                 }
 
             }
@@ -190,21 +217,26 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
 
 
         @Override
+        public void onWelcomeFragmentInteraction(String selected_workflow_key) {
+            // set the selected workflow
+            initSessionWorkflow(selected_workflow_key);
+        }
+
+        @Override
         public void onFragmentInteraction(int direction, int stageNo) {
             Log.d(TAG, "onFragmentInteraction()");
             handleFragments();
         }
 
-        @Override
-        public void onVisitorInteraction(String name, String company, String phoneNo) {
-
-        }
 
         @Override
         public void onTextInputInteraction(TextInputModel textInputModel) {
             Log.d(TAG, "obtained textinput model");
             if(mCurrentPreference instanceof TextInputPreferenceModel){
-                mDataModels.put(((TextInputPreferenceModel) mCurrentPreference).getPage_title(), textInputModel);
+                mDataModelsMap.put(((TextInputPreferenceModel) mCurrentPreference).getPage_title(), textInputModel);
+
+                //#######################################################################
+                quesAnsMap.putAll(textInputModel.getText_input_data());
             }
             else{
                 Log.e(TAG, "current preference object did not match the required object, check onTextInputInteraction");
@@ -216,7 +248,10 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
         public void onSurveyInteraction(SurveyModel surveyModel) {
             Log.d(TAG, "obtained survey info");
             if(mCurrentPreference instanceof SurveyPreferenceModel){
-                mDataModels.put(((SurveyPreferenceModel) mCurrentPreference).getSurvey_title(), surveyModel);
+                mDataModelsMap.put(((SurveyPreferenceModel) mCurrentPreference).getSurvey_title(), surveyModel);
+
+                //########################################################################
+                quesAnsMap.putAll(surveyModel.getSurvey_results());
             }
             else{
                 Log.e(TAG, "current preference object did not match the required object, check onSurveyInteraction");
@@ -225,15 +260,18 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
 
         @Override
         public void OnThankYouFragmentInteraction() {
-            Intent intent = new Intent(this, MasterActivity.class);
+
+            // TODO: Integrating Welcome fragment in stage activity
+            /*Intent intent = new Intent(this, MasterActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
+            startActivity(intent);*/
+            initWelcomeFragment();
         }
 
         private void uploadDataModel(){
 
             Map<String, Map<String, Model>> visitor_data_map = new HashMap<>();
-            visitor_data_map.put(workflow_name, mDataModels);
+            visitor_data_map.put(workflow_name, mDataModelsMap);
             mVisitorDataModel.setVisitor_model(visitor_data_map);
 
             CollectionReference visitor_reference = mFirestore.collection("institutes")
@@ -254,6 +292,36 @@ public class StageActivity extends AppCompatActivity implements VisitorInfoFragm
                 }
             });
         }
+
+
+        //############################################################################3
+        private void uploadWorkflow(final String workflow){
+            workflowCollectionRef = mFirestore.collection(getString(R.string.collection_ref_institutes))
+                    .document(FirebaseAuth.getInstance().getUid()).collection(getString(R.string.collection_ref_workflows));
+            visitorsCollectionRef = workflowCollectionRef.document(workflow).collection(getString(R.string.collection_ref_visitors));
+
+            // Get the time of signUp
+            String visitor_id = System.currentTimeMillis() + "";  //for now this will be the visitor uid
+
+            ArrayList<String> questions = new ArrayList<>(quesAnsMap.keySet());
+            Map<String, List<String>> questionsMap = new HashMap<>();
+            questionsMap.put("questions", questions);
+            workflowCollectionRef.document(workflow).set(questionsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "uplaoded the list of questions in " + workflow + " workflow");
+                }
+            });
+
+            visitorsCollectionRef.document(visitor_id).set(quesAnsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Log.d(TAG, "Uploaded the visitor ques Ans map");
+                }
+            });
+        }
+
+        //##########################################################################################
 
         private void showSnackbar(String message){
             Snackbar.make(mConstraintLayout, message, Snackbar.LENGTH_SHORT).show();

@@ -50,7 +50,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnWelcomeFragmentInteractionListener mListener;
 
     public WelcomeFragment() {
         // Required empty public constructor
@@ -126,8 +126,8 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnWelcomeFragmentInteractionListener) {
+            mListener = (OnWelcomeFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -161,25 +161,33 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
                 startActivity(intent, activityOptionsCompat.toBundle());
                 break;*/
 
-            case R.id.button1:
 
-                intent = new Intent(getActivity(), StageActivity.class);
+            // TODO: Integrating Welcome fragment in stage activity
+            /*case R.id.button1:
+
+                *//*intent = new Intent(getActivity(), StageActivity.class);
                 intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);
+                startActivity(intent);*//*
                 break;
 
             case R.id.button2:
 
-                intent = new Intent(getActivity(), StageActivity.class);
+                *//*intent = new Intent(getActivity(), StageActivity.class);
                 intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);
+                startActivity(intent);*//*
                 break;
 
             case R.id.button3:
 
-                intent = new Intent(getActivity(), StageActivity.class);
+                *//*intent = new Intent(getActivity(), StageActivity.class);
                 intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);
+                startActivity(intent);*//*
+                break;*/
+
+            case R.id.button1:
+            case R.id.button2:
+            case R.id.button3:
+                mListener.onWelcomeFragmentInteraction(button_workflow_map.get(id));
                 break;
 
             case R.id.btn_qr_signin:
@@ -190,7 +198,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+    public interface OnWelcomeFragmentInteractionListener {
+        void onWelcomeFragmentInteraction(String selected_workflow_key);
     }
 }

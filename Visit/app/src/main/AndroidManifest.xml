@@ -35,7 +35,11 @@
         <activity
             android:name=".activities.DiscoveryActivity"
             android:label="@string/app_title" />
-        <activity android:name=".activities.SignUpActivity" />
+
+        <!--Not required anymore except for some image uploading code-->
+        <!--<activity android:name=".activities.SignUpActivity" />-->
+
+
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.MasterActivity" />
         <activity android:name=".activities.QrScanner" />
@@ -53,9 +57,26 @@
         <activity android:name=".activities.voiceRecognitionTest" />
 
         <service
-            android:name=".TextToSpeechService"
+            android:name=".services.TextToSpeechService"
             android:enabled="true"
             android:exported="true"></service>
+
+        <receiver
+            android:name=".services.BroadcastReceiverOnBootComplete"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                <data android:scheme="package" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
+                <data android:scheme="package" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
