@@ -1,11 +1,15 @@
 package com.example.sonu_pc.visit.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,11 +20,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.model.data_model.CameraModel;
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
-import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
@@ -41,7 +43,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SetupActivity extends AppCompatActivity {
 
@@ -54,6 +55,10 @@ public class SetupActivity extends AppCompatActivity {
     private ConstraintLayout mConstraintLayout;
     private ProgressBar mProgressBar;
     private ImageView mImageView;
+
+    private static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 111;
+    private static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 121;
+    private static final int MY_PERMISSIONS_REQUEST_CAMERA = 131;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +74,16 @@ public class SetupActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         mImageView = findViewById(R.id.brand_logo);
 
-        startSigninSequence();
+        if(areAllPermissionsSatisfied()){
+            Log.d(TAG, "all permissions are satisfied now");
+            startSigninSequence();
+        }
+        else{
+            checkForPermissions();
+        }
+
+        // start sign in sequence after all the permissions are satisfied
+
     }
 
     private void startSigninSequence(){
@@ -87,8 +101,8 @@ public class SetupActivity extends AppCompatActivity {
             //getConfigValues();
 
             // TODO: for testing only, added always on registration and commented get config vavlues
-            //test_registerInstitutionForRemoteConfig();
-            test_getConfigValues();
+            //registerInstitutionForRemoteConfig();
+            getConfigValues();
 
             //test_firebase_so_ques();
 
@@ -110,148 +124,8 @@ public class SetupActivity extends AppCompatActivity {
         this.startService(serviceIntent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_SIGN_IN){
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-
-            // Successfully signed in
-            if(resultCode == RESULT_OK){
-                Snackbar.make(mConstraintLayout, "Successfully Signed In", Snackbar.LENGTH_SHORT)
-                        .show();
-                // First time registration of institution on realtime database for remote config
-                //TODO: for testing masterworkflow object
-                //registerInstitutionForRemoteConfig();
-
-                test_registerInstitutionForRemoteConfig();
-
-            }
-            else{
-                // Sign in failed
-                if(response == null){
-                    // user pressed back button
-                }
-            }
-        }
-    }
-
-
-
-
-    private void registerInstitutionForRemoteConfig(){
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // Register with default config values
-        PreferencesModel preferencesModel = new PreferencesModel();
-        preferencesModel.setSignup_time(System.currentTimeMillis());
-        preferencesModel.setStage1(true);
-        preferencesModel.setStage2(true);
-        preferencesModel.setStage3(false);
-        preferencesModel.setStage4(false);
-        preferencesModel.setStage5(false);
-        //preferencesModel.setStage6(true);
-        preferencesModel.setTermsAndCond("These are the terms and dsafkljsa;fa conditions :D");
-
-        // Create default survey values
-        SurveyPreferenceModel surveyPreferenceModel = new SurveyPreferenceModel();
-        String survey_title = "Sample survey";
-        ArrayList<String> survey_item_titles = new ArrayList<>();
-        survey_item_titles.add("Sample item 1");
-        survey_item_titles.add("Sample item 2");
-        survey_item_titles.add("Sample item 3");
-
-        ArrayList<String> options1 = new ArrayList<String>();
-        ArrayList<String> options2 = new ArrayList<String>();
-        ArrayList<String> options3 = new ArrayList<String>();
-
-        options1.add("options11");
-        options1.add("options12");
-        options1.add("options13");
-
-        options2.add("options21");
-        options2.add("options22");
-        options2.add("options23");
-
-        options3.add("options31");
-        options3.add("options32");
-        options3.add("options33");
-
-        ArrayList<ArrayList<String>> survey_item_options = new ArrayList<>();
-        survey_item_options.add(options1);
-        survey_item_options.add(options2);
-        survey_item_options.add(options3);
-
-        surveyPreferenceModel.setSurvey_title(survey_title);
-        surveyPreferenceModel.setSurvey_item_name(survey_item_titles);
-        surveyPreferenceModel.setSurvey_item_options(survey_item_options);
-
-        // Create default TextInputPreference Model
-        TextInputPreferenceModel textInputPreferenceModel = new TextInputPreferenceModel();
-        textInputPreferenceModel.setPage_title("Sample Page Title");
-
-        List<String> hints = new ArrayList<>();
-        hints.add("hint1");
-        hints.add("hint2");
-        textInputPreferenceModel.setHints(hints);
-
-        // Combine the models
-        preferencesModel.setSurveyPreferenceModel(surveyPreferenceModel);
-        preferencesModel.setTextInputPreferenceModel(textInputPreferenceModel);
-
-        preferencesModel.setInstituteEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-
-        mDatabaseReference.child(FirebaseAuth.getInstance().getUid())
-                .setValue(preferencesModel)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "Successfully registered on realtime database");
-                        getConfigValues();
-                    }
-
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "failed to add preference object", e);
-                    }
-                });
-    }
-
-    private void getConfigValues(){
-
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid());
-        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                PreferencesModel preferencesModel = dataSnapshot.getValue(PreferencesModel.class);
-                Log.d(TAG, "Successfully obtained the preference object");
-
-                // Store preference object in shared preferences
-                SharedPreferences sharedPreferences = getSharedPreferences(getString(R.string.REMOTE_CONFIG_PREFERENCE), MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                Gson gson = new Gson();
-                String config_string = gson.toJson(preferencesModel);
-                Log.d(TAG, config_string);
-                editor.putString(getString(R.string.CONFIGURATION_PREFERENCE_KEY), config_string);
-                editor.putString("key", "testvalue");
-                editor.commit();
-
-
-                moveToSignupActivity();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void moveToSignupActivity(){
+    private void moveToStageActivity(){
 
         Log.d(TAG, "sign in and pref download complete, moving to stage acitivity");
         View sharedView = mImageView;
@@ -271,7 +145,7 @@ public class SetupActivity extends AppCompatActivity {
     }
 
 
-    private void test_registerInstitutionForRemoteConfig(){
+    private void registerInstitutionForRemoteConfig(){
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         MasterWorkflow masterWorkflow = VisitUtils.getDefaultMasterWorkflow(this);
@@ -282,7 +156,7 @@ public class SetupActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "Successfully registered masterworkflow on realtime database");
-                        test_getConfigValues();
+                        getConfigValues();
                     }
 
                 })
@@ -295,7 +169,7 @@ public class SetupActivity extends AppCompatActivity {
     }
 
 
-    private void test_getConfigValues(){
+    private void getConfigValues(){
         Log.d(TAG, "getting config values");
         mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid());
         mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -368,7 +242,7 @@ public class SetupActivity extends AppCompatActivity {
 
 
                 //seeJsonObject(masterWorkflow);
-                moveToSignupActivity();
+                moveToStageActivity();
             }
 
             @Override
@@ -379,4 +253,150 @@ public class SetupActivity extends AppCompatActivity {
 
     }
 
+    private boolean areAllPermissionsSatisfied(){
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+    private void checkForPermissions(){
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+        }
+        else {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            }
+            else {
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.CAMERA)
+                        != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.CAMERA},
+                            MY_PERMISSIONS_REQUEST_CAMERA);
+                }
+            }
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case RC_SIGN_IN: {
+                IdpResponse response = IdpResponse.fromResultIntent(data);
+
+                // Successfully signed in
+                if (resultCode == RESULT_OK) {
+                    Snackbar.make(mConstraintLayout, "Successfully Signed In", Snackbar.LENGTH_SHORT)
+                            .show();
+                    // First time registration of institution on realtime database for remote config
+
+                    registerInstitutionForRemoteConfig();
+
+                } else {
+                    // Sign in failed
+                    if (response == null) {
+                        // user pressed back button
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_RECORD_AUDIO: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    Log.d(TAG, requestCode + " granted");
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+                } else {
+                    Log.d(TAG, requestCode + " not granted.");
+                    finish();
+                }
+                return;
+            }
+
+            case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.d(TAG, requestCode + " granted");
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.CAMERA},
+                            MY_PERMISSIONS_REQUEST_CAMERA);
+
+                } else {
+
+                    Log.d(TAG, requestCode + " not granted.");
+                    finish();
+                }
+                return;
+            }
+
+            case MY_PERMISSIONS_REQUEST_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    Log.d(TAG, requestCode + " granted");
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                    if(areAllPermissionsSatisfied()){
+                        Log.d(TAG, "areAllpermissionssatisfied check in the permission result activity");
+                        startSigninSequence();
+                    }
+                } else {
+
+                    Log.d(TAG, requestCode + " not granted.");
+                    finish();
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+
+
+    }
 }
