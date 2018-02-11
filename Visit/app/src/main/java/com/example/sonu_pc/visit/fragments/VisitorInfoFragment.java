@@ -2,10 +2,13 @@ package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -44,6 +47,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
     private static final String ARG_PARAM2 = "param2";
 
+    private ImageView mBrandLogo;
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
     private TextView mTextViewTitle;
     private Button mButtonNext;
@@ -82,6 +86,10 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+
         if (getArguments() != null) {
             Log.d(TAG, "onCreate()");
             mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
@@ -120,6 +128,8 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_visitor_info, container, false);
+
+        mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         mEditText1 = view.findViewById(R.id.editText1);
         mEditText2 = view.findViewById(R.id.editText2);
         mEditText3 = view.findViewById(R.id.editText3);
@@ -451,6 +461,9 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, s);
     }
 
+    public ImageView getSharedImageView(){
+        return mBrandLogo;
+    }
     //==============================================================================================
     public interface OnFragmentInteractionListener {
 

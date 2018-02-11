@@ -2,14 +2,18 @@ package com.example.sonu_pc.visit.fragments;
 
 
 import android.content.Context;
+import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sonu_pc.visit.R;
@@ -26,6 +30,7 @@ public class ThankYouFragment extends Fragment {
     private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
     private String mPrefObjJson;
 
+    private ImageView mBrandLogo;
     private TextView mThankYouTextView;
 
     private ThankYouPreference mThankYouPreference;
@@ -53,6 +58,11 @@ public class ThankYouFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+
         if (getArguments() != null) {
             Log.d(TAG, "onCreate()");
             mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
@@ -65,6 +75,8 @@ public class ThankYouFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_thank_you, container, false);
+
+        mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         mThankYouTextView = view.findViewById(R.id.textView_thank_you);
         mThankYouTextView.setText(mThankYouPreference.getThank_you_text());
 
@@ -90,6 +102,10 @@ public class ThankYouFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
+    }
+
+    public ImageView getSharedImageView(){
+        return mBrandLogo;
     }
 
     public interface OnThankYouFragmentInteractionListener{

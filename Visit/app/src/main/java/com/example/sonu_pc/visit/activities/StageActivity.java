@@ -10,11 +10,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.fragments.FaceIdFragment;
@@ -189,39 +191,48 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
         Log.d(TAG, "handleFragments()");
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+
         if(curr_stage < mOrderOfScreens.size()) { // if the curr screen no is within req no of screens
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
             Log.d(TAG, "curr stage = " + curr_stage);
             Gson gson = GsonUtils.getGsonParser();
             String pref_obj_json;
 
+            final ImageView sharedImage = getCurrentFragmentBrandImage();
             mCurrentPreference = mOrderOfScreens.get(curr_stage++);      // get the pref object of the fragment
 
             if(mCurrentPreference instanceof TextInputPreferenceModel){
                 Log.d(TAG, "moving to text input fragment");
+                //final ImageView sharedImage = ((VisitorInfoFragment) fragment).getSharedImageView();
                 pref_obj_json = gson.toJson((TextInputPreferenceModel) mCurrentPreference);
                 fragmentManager.beginTransaction()
+                        .addSharedElement(sharedImage, ViewCompat.getTransitionName(sharedImage))
                         .replace(R.id.fragment_container, VisitorInfoFragment.newInstance(pref_obj_json, ""))
                         .commit();
             }
             else if(mCurrentPreference instanceof SurveyPreferenceModel){
                 Log.d(TAG, "moving to survey input fragment");
+                //final ImageView sharedImage = ((SurveyFragment) fragment).getSharedImageView();
                 pref_obj_json = gson.toJson((SurveyPreferenceModel) mCurrentPreference);
                 fragmentManager.beginTransaction()
+                        .addSharedElement(sharedImage, ViewCompat.getTransitionName(sharedImage))
                         .replace(R.id.fragment_container, SurveyFragment.newInstance(pref_obj_json, ""))
                         .commit();
             }
             else if(mCurrentPreference instanceof CameraPreference){
                 Log.d(TAG, "moving to camera preference fragment");
+                //final ImageView sharedImage = ((IdScanFragment) fragment).getSharedImageView();
                 pref_obj_json = gson.toJson((CameraPreference) mCurrentPreference);
                 fragmentManager.beginTransaction()
+                        .addSharedElement(sharedImage, ViewCompat.getTransitionName(sharedImage))
                         .replace(R.id.fragment_container, IdScanFragment.newInstance(pref_obj_json, visitor_id))
                         .commit();
             }
             else if(mCurrentPreference instanceof ThankYouPreference){
                 Log.d(TAG, "moving to thank you fragment");
+
                 pref_obj_json = gson.toJson((ThankYouPreference) mCurrentPreference);
                 fragmentManager.beginTransaction()
                         .replace(R.id.fragment_container, ThankYouFragment.newInstance(pref_obj_json))
@@ -242,6 +253,35 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
         }
 
+    }
+
+    private ImageView getCurrentFragmentBrandImage(){
+
+        ImageView brandImage = null;
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
+
+       if(fragment instanceof WelcomeFragment){
+           brandImage = ((WelcomeFragment) fragment).getSharedImageView();
+       }
+       else if(fragment instanceof VisitorInfoFragment){
+           brandImage = ((VisitorInfoFragment) fragment).getSharedImageView();
+       }
+       else if(fragment instanceof SurveyFragment){
+           brandImage = ((SurveyFragment) fragment).getSharedImageView();
+       }
+       else if(fragment instanceof IdScanFragment){
+           brandImage = ((IdScanFragment) fragment).getSharedImageView();
+       }
+       else if(fragment instanceof ThankYouFragment){
+           Log.e(TAG, "this log should not appear if thank you fragment is the last fragment!");
+           brandImage = ((ThankYouFragment) fragment).getSharedImageView();
+       }
+       if(brandImage == null){
+           Log.e(TAG, "some error in retrieving the brand image check getCurrentFragmentBrandImage()");
+       }
+       return brandImage;
     }
 
 

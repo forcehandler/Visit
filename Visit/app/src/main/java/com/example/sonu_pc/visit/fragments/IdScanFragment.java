@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +49,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     private String visitor_name;
     private String mPrefObjJson;
 
+    private ImageView mBrandLogo;
     private ImageButton mImageButtonCamera;
     private CameraView mCameraView;
     private TextView mCameraHint;
@@ -74,6 +78,11 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+
         if (getArguments() != null) {
             Log.d(TAG, "onCreate()");
             visitor_name = getArguments().getString(VISITOR_NAME);
@@ -91,6 +100,8 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG, "onCreateView()");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_id_scan, container, false);
+
+        mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         mImageButtonCamera = (ImageButton) view.findViewById(R.id.imageButton_camera);
         mCameraView = (CameraView) view.findViewById(R.id.camera);
         mCameraHint = view.findViewById(R.id.tv_camera_hint);
@@ -223,6 +234,9 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
         return uri;
     }
 
+    public ImageView getSharedImageView(){
+        return mBrandLogo;
+    }
 
     //[Interfaces]
     public interface OnFragmentInteractionListener {

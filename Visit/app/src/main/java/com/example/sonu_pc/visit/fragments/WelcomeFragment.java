@@ -3,8 +3,9 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -16,15 +17,12 @@ import android.widget.ImageView;
 
 import com.example.sonu_pc.visit.activities.QrScanner;
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.activities.SignUpActivity;
-import com.example.sonu_pc.visit.activities.StageActivity;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +34,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private ImageView mBrandLogo;
     private Button mButton_1, mButton_2, mButton_3;
     private Button mButtonQrSignIn;
 
@@ -69,6 +68,10 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -83,6 +86,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_welcome, container, false);
         buttonList = new ArrayList<>();
 
+        mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         mButton_1 = view.findViewById(R.id.button1);
         mButton_2 = view.findViewById(R.id.button2);
         mButton_3 = view.findViewById(R.id.button3);
@@ -92,7 +96,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         buttonList.add(mButton_3);
 
         mButtonQrSignIn = view.findViewById(R.id.btn_qr_signin);
-        mImageViewBrandLogo = view.findViewById(R.id.imageViewLogo);
+        mImageViewBrandLogo = view.findViewById(R.id.iv_brand_logo);
 
         button_workflow_map = new HashMap<>();
         int button_counter = 0;
@@ -122,6 +126,8 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
             masterWorkflow = gson.fromJson(workflow_json, MasterWorkflow.class);
         }
     }
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -197,6 +203,9 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    public ImageView getSharedImageView(){
+        return mBrandLogo;
+    }
 
     public interface OnWelcomeFragmentInteractionListener {
         void onWelcomeFragmentInteraction(String selected_workflow_key);

@@ -5,7 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sonu_pc.visit.R;
@@ -33,6 +36,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     private static final String TAG = SurveyFragment.class.getSimpleName();
 
+    private ImageView mBrandLogo;
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
     private TextView mTextViewTitle;
     private Button mButtonNext;
@@ -74,6 +78,11 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+        }
+
         if (getArguments() != null) {
             mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -98,6 +107,8 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_survey, container, false);
+
+        mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         mEditText1 = view.findViewById(R.id.editText1);
         mEditText2 = view.findViewById(R.id.editText2);
         mEditText3 = view.findViewById(R.id.editText3);
@@ -267,6 +278,10 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
             }
         }
         return true;
+    }
+
+    public ImageView getSharedImageView(){
+        return mBrandLogo;
     }
 
     public interface OnFragmentInteractionListener {
