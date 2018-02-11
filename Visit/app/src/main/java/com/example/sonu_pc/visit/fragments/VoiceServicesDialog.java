@@ -1,6 +1,5 @@
 package com.example.sonu_pc.visit.fragments;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.activities.voiceRecognitionTest;
 
 import java.util.ArrayList;
 
@@ -32,7 +30,7 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
 
     private static final String TAG = VoiceServicesDialog.class.getSimpleName();
 
-    private TextView textView1, textView2;
+    private TextView tv_tts_hint, tv_stt_hint;
 
     private SpeechRecognizer sr;
 
@@ -40,17 +38,36 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
 
     private VisitorInfoFragment mVisitorInfoFragment;
 
+    private static final String ARG_SPEECH_HINT_TEXT = "hint text";
+    private String mSpeechHintText;
+
     public VoiceServicesDialog() {
         // Required empty public constructor
+    }
+
+    public static VoiceServicesDialog newInstance(String param1) {
+        VoiceServicesDialog fragment = new VoiceServicesDialog();
+        Bundle args = new Bundle();
+        args.putString(ARG_SPEECH_HINT_TEXT, param1);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        sr = SpeechRecognizer.createSpeechRecognizer(getContext());
-        sr.setRecognitionListener(new listener());
-        mVisitorInfoFragment = (VisitorInfoFragment) getTargetFragment();
+        if (getArguments() != null) {
+            Log.d(TAG, "onCreate()");
+            mSpeechHintText = getArguments().getString(ARG_SPEECH_HINT_TEXT);
+
+            sr = SpeechRecognizer.createSpeechRecognizer(getContext());
+            sr.setRecognitionListener(new listener());
+            mVisitorInfoFragment = (VisitorInfoFragment) getTargetFragment();
+        }
+        else{
+            Log.e(TAG, "No Speech hint set for the dialog fragment. Initialize fragment by new instance and not by constructor");
+        }
 
     }
 
@@ -60,9 +77,10 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_blank, container, false);
 
-        textView1 = view.findViewById(R.id.tv_speech_hint_text);
-        textView2 = view.findViewById(R.id.tv_listening_hint);
+        tv_tts_hint = view.findViewById(R.id.tv_speech_hint_text);
+        tv_stt_hint = view.findViewById(R.id.tv_listening_hint);
 
+        tv_tts_hint.setText(mSpeechHintText);
 
         return view;
     }
@@ -74,16 +92,6 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
         }
     }
 
-   /* @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnVoiceServicesDialogInteractionListener) {
-            mListener = (OnVoiceServicesDialogInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }*/
 
     @Override
     public void onDetach() {
@@ -136,7 +144,7 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    textView2.setText("Start Speaking...");
+                    tv_stt_hint.setText("Start Speaking...");
                 }
             });
 
@@ -170,7 +178,7 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    textView2.setText("Could not recognize your voice, please try again");
+                    tv_stt_hint.setText("Could not recognize your voice, please try again");
 
                 }
             });

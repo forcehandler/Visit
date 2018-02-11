@@ -226,7 +226,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
     public void showDialog() {
         // Create the fragment and show it as a dialog.
-        voiceServicesDialogFragment = new VoiceServicesDialog();
+        voiceServicesDialogFragment = VoiceServicesDialog.newInstance(mFocusedEditText.getHint().toString());
         voiceServicesDialogFragment.setTargetFragment(this, 1337);
         voiceServicesDialogFragment.show(getFragmentManager(), "dialog");
 
