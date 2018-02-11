@@ -30,6 +30,7 @@ import com.example.sonu_pc.visit.fragments.ThankYouFragment;
 import com.example.sonu_pc.visit.fragments.VisiteeInfoFragment;
 import com.example.sonu_pc.visit.fragments.VisitorInfoFragment;
 import com.example.sonu_pc.visit.model.CouponModel;
+import com.example.sonu_pc.visit.model.data_model.CameraModel;
 import com.example.sonu_pc.visit.model.data_model.DataModel;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
@@ -527,8 +528,18 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
     }
 
     @Override
+    public void onPhotoTaken(Uri photo) {
+
+    }
+
+    @Override
     public void onIdPhotoTaken(Bitmap IdPhoto) {
         Log.d(TAG, "obtained id photo");
+    }
+
+    @Override
+    public void onPhotoTaken(CameraModel cameraModel) {
+
     }
 
 

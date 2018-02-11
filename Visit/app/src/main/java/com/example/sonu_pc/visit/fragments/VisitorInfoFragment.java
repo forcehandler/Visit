@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.DialogFragment;
@@ -60,6 +61,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private OnFragmentInteractionListener mListener;
     private OnVisitorInteractionListener mVisitorListener;
 
+    private boolean voiceRoutine = true;
 
     private static final int REQ_CODE_SPEECH_INPUT = 111;
 
@@ -149,6 +151,11 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         microphone.setOnClickListener(this);
 
         Log.d(TAG, "onCreateView()");
+
+        if(isVoiceOnlyRoutineEnabled()){
+            beginDelayedVoiceOnlyRoutine();
+        }
+
         return view;
     }
 
@@ -204,9 +211,13 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         if(v == microphone){
             Log.v(TAG, "mic pressed");
 
-            //test_getTextFromSpeech();
-            showDialog();
-            speakSelectedHint();
+            if(mFocusedEditText != null){
+                showDialog();
+                speakSelectedHint();
+            }
+            else{
+                Log.e(TAG, "Did not select the edit text before pressing mic button");
+            }
         }
 
     }
@@ -227,10 +238,14 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     }
 
 
-    public void speechDialogResult(String s){
+    public void speechDialogResult(String s){                   // does not fire if the speech is not recognized
         Log.d(TAG, "received data from speech dialog");
         mFocusedEditText.setText(s);
-        moveFocusToNextEditText();
+
+        if(isVoiceOnlyRoutineEnabled() && moveFocusToNextEditText()){       // moveFocus function moves cursor to next et and reports if it was
+                                                                            // successful
+            beginAutomaticVoiceOnlyRoutine();           // Don't want delay when moving between edittexts
+        }
     }
 
 
@@ -249,22 +264,8 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     }
 
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case REQ_CODE_SPEECH_INPUT:
-                if(data != null) {
-                    String result_text = data.getStringExtra(getString(R.string.TEXT_FROM_SPEECH));
-                    Log.d(TAG, "speech result = result_tag");
-                    mFocusedEditText.setText(result_text);
-                    moveFocusToNextEditText();
-                }
-                break;
-        }
-    }
 
-    private void moveFocusToNextEditText(){
+    private boolean moveFocusToNextEditText(){
         if(mFocusedEditText != null) {
             int focusId = mFocusedEditText.getId();
             switch (focusId){
@@ -272,25 +273,66 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                     if(mEditText2.getVisibility() == View.VISIBLE){
                         mEditText2.requestFocus();
                         mFocusedEditText = mEditText2;
+                        return true;
                     }
-                    break;
+                    else{
+                        return false;
+                    }
+
                 case R.id.editText2:
                     if(mEditText3.getVisibility() == View.VISIBLE){
                         mEditText3.requestFocus();
                         mFocusedEditText = mEditText3;
+                        return true;
                     }
-                    break;
+                    else{
+                        return false;
+                    }
+
                 case R.id.editText3:
                     if(mEditText4.getVisibility() == View.VISIBLE){
                         mEditText4.requestFocus();
                         mFocusedEditText = mEditText4;
+                        return true;
                     }
-                    break;
+                    else{
+                        return false;
+                    }
+
                 default:
-                    mButtonNext.requestFocus();
-                    break;
+                    return false;
+
             }
         }
+        return false;
+    }
+
+    private boolean isVoiceOnlyRoutineEnabled(){
+        return voiceRoutine;
+    }
+
+    private void beginDelayedVoiceOnlyRoutine(){
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                beginAutomaticVoiceOnlyRoutine();
+            }
+        }, 500);
+    }
+
+    private void beginAutomaticVoiceOnlyRoutine(){
+
+        Log.d(TAG, "beginAutomaticVoiceOnlyRoutine()");
+        // while the focus is on the edittext, show dialog, speak, recognize and fill in the dialog
+        // with the text result
+        //if (mFocusedEditText instanceof EditText){
+            showDialog();
+            speakSelectedHint();
+        //}
+        /*else{
+            Log.d(TAG, "disabling voice routine coz focus is not on edit text.");
+            voiceRoutine = false;
+        }*/
     }
 
     public boolean isEverythingAllRight(){

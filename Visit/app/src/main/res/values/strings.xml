@@ -134,4 +134,7 @@
     <string name="collection_ref_institutes">institutes</string>
     <string name="collection_ref_workflows">workflows</string>
     <string name="collection_ref_visitors">visitors</string>
+    <string name="class_type_firebase_pref">wipe</string>
+    <string name="collection_ref_photos">photos</string>
+    <string name="CLASS_CAMERA">CLASS_CAMERA</string>
 </resources>

@@ -2,8 +2,10 @@ package com.example.sonu_pc.visit.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Camera;
 
 import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
@@ -53,7 +55,7 @@ public class VisitUtils {
 
         // Survey1
         SurveyPreferenceModel surveyPreferenceModel = new SurveyPreferenceModel();
-        String survey_title = "Sample survey";
+        String survey_title = "Sample survey1";
         ArrayList<String> survey_item_titles = new ArrayList<>();
         survey_item_titles.add("Sample item 1");
         survey_item_titles.add("Sample item 2");
@@ -87,11 +89,11 @@ public class VisitUtils {
 
         // Survey 2
         SurveyPreferenceModel surveyPreferenceModel1 = new SurveyPreferenceModel();
-        String survey_title1 = "Sample survey";
+        String survey_title1 = "Sample survey2";
         ArrayList<String> survey_item_titles1 = new ArrayList<>();
-        survey_item_titles1.add("Sample item 1");
-        survey_item_titles1.add("Sample item 2");
-        survey_item_titles1.add("Sample item 3");
+        survey_item_titles1.add("Sample item 11");
+        survey_item_titles1.add("Sample item 21");
+        survey_item_titles1.add("Sample item 31");
 
         ArrayList<String> options11 = new ArrayList<String>();
         ArrayList<String> options21 = new ArrayList<String>();
@@ -123,6 +125,9 @@ public class VisitUtils {
         // ThankYou object
         ThankYouPreference thankYouPreference = getDefaultThankYouPreference();
 
+        // Camera pref object
+        CameraPreference cameraPreference = getDefaultCameraPreference();
+
         // Workflow1
         PreferencesModel preferencesModel = new PreferencesModel();
         preferencesModel.setSignup_time(System.currentTimeMillis());
@@ -139,6 +144,7 @@ public class VisitUtils {
         workflow_order.add(textInputPreferenceModel);
         workflow_order.add(surveyPreferenceModel);
         workflow_order.add(surveyPreferenceModel1);
+        workflow_order.add(cameraPreference);
         workflow_order.add(thankYouPreference);
 
         preferencesModel.setOrder_of_screens(workflow_order);
@@ -207,4 +213,12 @@ public class VisitUtils {
         thankYouPreference.setThank_you_text("Default thank you");
         return thankYouPreference;
     }
+
+    public static CameraPreference getDefaultCameraPreference(){
+
+        CameraPreference cameraPreference = new CameraPreference();
+        cameraPreference.setCamera_hint_text("Smile_for_the_camera!");
+        return cameraPreference;
+    }
+
 }

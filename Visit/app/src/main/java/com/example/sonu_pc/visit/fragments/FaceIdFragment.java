@@ -25,12 +25,15 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.activities.StageActivity;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import jp.wasabeef.picasso.transformations.CropSquareTransformation;
 import jp.wasabeef.picasso.transformations.GrayscaleTransformation;
@@ -51,7 +54,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String VISITOR_NAME = "visitor_name";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
 
     private ImageButton mImageButtonCamera;
     private CameraView mCameraView;
@@ -60,7 +63,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
     private Bitmap mBitmapFacePhotoBnw ;
     // TODO: Rename and change types of parameters
     private String visitor_name;
-    private String mParam2;
+    private String mPrefObjJson;
 
     private OnFragmentInteractionListener mListener;
     private OnFacePhotoTakenListener mPhotoListener;
@@ -70,20 +73,11 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         Log.d(TAG, "FaceIdFragment Constructor()");
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FaceIdFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FaceIdFragment newInstance(String param1, String param2) {
         FaceIdFragment fragment = new FaceIdFragment();
         Bundle args = new Bundle();
-        args.putString(VISITOR_NAME, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_PREF_OBJ_JSON, param1);
+        args.putString(VISITOR_NAME, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -94,7 +88,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             visitor_name = getArguments().getString(VISITOR_NAME);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mPrefObjJson = getArguments().getString(ARG_PREF_OBJ_JSON);
         }
     }
 
@@ -129,6 +123,15 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    private void imageBnwAndCropTransform(Bitmap photo) {
+
+        Picasso.with(getActivity()).load(getImageUri(getActivity(), photo)).transform(new GrayscaleTransformation())
+                .transform(new CropSquareTransformation()).resize(200,200).centerCrop().into(target);
+        // The processed image is now received by the target.
+
+    }
+
+
     // Obtain Bnw cropped picture from picasso
     Target target = new Target() {
         @Override
@@ -138,7 +141,11 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
 
             // send the images to the Activity
             if(mPhotoListener != null){
+                Uri colorPhotoUri = saveImageToInternalStorage(mBitmapFacePhotoColor, visitor_name); // Here the visitor name is the visitor id provided by the activity
                 mPhotoListener.onFacePhotoTaken(mBitmapFacePhotoColor, changeBitmapContrastBrightness(mBitmapFacePhotoBnw,2,-50));
+
+                //#################################################################################
+                mPhotoListener.onPhotoTaken(colorPhotoUri);
             }
             //move to the next fragment
             moveToNext();
@@ -155,41 +162,7 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         }
     };
 
-    private void imageBnwAndCropTransform(Bitmap photo) {
 
-        Picasso.with(getActivity()).load(getImageUri(getActivity(), photo)).transform(new GrayscaleTransformation())
-                .transform(new CropSquareTransformation()).resize(200,200).centerCrop().into(target);
-        // The processed image is now received by the target.
-
-    }
-
-    /**
-     *
-     * @param bmp input bitmap
-     * @param contrast 0..10 1 is default
-     * @param brightness -255..255 0 is default
-     * @return new bitmap
-     */
-    public static Bitmap changeBitmapContrastBrightness(Bitmap bmp, float contrast, float brightness)
-    {
-        ColorMatrix cm = new ColorMatrix(new float[]
-                {
-                        contrast, 0, 0, 0, brightness,
-                        0, contrast, 0, 0, brightness,
-                        0, 0, contrast, 0, brightness,
-                        0, 0, 0, 1, 0
-                });
-
-        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-
-        Canvas canvas = new Canvas(ret);
-
-        Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(cm));
-        canvas.drawBitmap(bmp, 0, 0, paint);
-
-        return ret;
-    }
 
     //not a good hack, but picasso needs the image uri and not the bitmap itself
 
@@ -293,16 +266,30 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    private Uri saveImageToInternalStorage(Bitmap bitmap, String filename){
+
+        // File represents internal directory of the app
+        File file = new File(getActivity().getFilesDir(), filename);
+
+        Uri uri = Uri.fromFile(file);
+        Log.d(TAG, "URI from file: " + uri);
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+        FileOutputStream fos;
+        try{
+            fos = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+            fos.write(bytes.toByteArray());
+            fos.close();
+        }
+        catch (Exception e){
+            Log.e(TAG, "Exception while writing file: " + filename);
+            e.printStackTrace();
+        }
+        return uri;
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument wipe and name
         void onFragmentInteraction(int direction, int stageNo);
@@ -311,5 +298,35 @@ public class FaceIdFragment extends Fragment implements View.OnClickListener {
     // TODO: Transfer the photos to the Activity for passing it to the printer module and uploading to firebase
     public interface OnFacePhotoTakenListener{
         void onFacePhotoTaken(Bitmap colorPhoto, Bitmap bnwPhoto);
+        void onPhotoTaken(Uri photo);
+    }
+
+
+    /**
+     *
+     * @param bmp input bitmap
+     * @param contrast 0..10 1 is default
+     * @param brightness -255..255 0 is default
+     * @return new bitmap
+     */
+    public static Bitmap changeBitmapContrastBrightness(Bitmap bmp, float contrast, float brightness)
+    {
+        ColorMatrix cm = new ColorMatrix(new float[]
+                {
+                        contrast, 0, 0, 0, brightness,
+                        0, contrast, 0, 0, brightness,
+                        0, 0, contrast, 0, brightness,
+                        0, 0, 0, 1, 0
+                });
+
+        Bitmap ret = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
+
+        Canvas canvas = new Canvas(ret);
+
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(cm));
+        canvas.drawBitmap(bmp, 0, 0, paint);
+
+        return ret;
     }
 }

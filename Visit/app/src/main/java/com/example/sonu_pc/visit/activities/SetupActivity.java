@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.model.data_model.CameraModel;
+import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
@@ -324,8 +326,9 @@ public class SetupActivity extends AppCompatActivity {
                         }*/
 
 
-                        String type = screen.child("wipe").getValue(String.class);
+                        String type = screen.child(getString(R.string.class_type_firebase_pref)).getValue(String.class);
                         Log.d(TAG, "screen wipe = " + type);
+
                         if(getString(R.string.CLASS_TEXTINPUT).equals(type)){
                             Log.d(TAG, "got the text input class");
                             TextInputPreferenceModel textInputPreferenceModel = screen.getValue(TextInputPreferenceModel.class);
@@ -337,6 +340,12 @@ public class SetupActivity extends AppCompatActivity {
                             SurveyPreferenceModel surveyPreferenceModel = screen.getValue(SurveyPreferenceModel.class);
                             Log.d(TAG, "survey class = " + surveyPreferenceModel.getSurvey_title());
                             orderOfScreensList.add(surveyPreferenceModel);
+                        }
+                        else if(getString(R.string.CLASS_CAMERA).equals(type)){
+                            Log.d(TAG, "got the camera class");
+                            CameraPreference cameraPreference = screen.getValue(CameraPreference.class);
+                            Log.d(TAG, "survey class = " + cameraPreference.getCamera_hint_text());
+                            orderOfScreensList.add(cameraPreference);
                         }
                         else if(getString(R.string.CLASS_THANKYOU).equals(type)){
                             Log.d(TAG, "got the thank you class");
