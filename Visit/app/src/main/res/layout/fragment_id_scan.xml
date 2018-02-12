@@ -48,14 +48,14 @@
 
     <ImageView
         android:id="@+id/iv_brand_logo"
-        android:layout_width="13dp"
-        android:layout_height="2dp"
+        android:layout_width="1dp"
+        android:layout_height="1dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:src="@drawable/spectrum_5"
-        android:visibility="invisible"
         android:transitionName="@string/logo_transition_name"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

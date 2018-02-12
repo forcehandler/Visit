@@ -1,9 +1,11 @@
 package com.example.sonu_pc.visit.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
@@ -93,18 +95,24 @@ public class SetupActivity extends AppCompatActivity {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if(auth.getCurrentUser() != null){
-            Snackbar.make(mConstraintLayout, "Already Signed in", Snackbar.LENGTH_SHORT)
-                    .show();
+            /*Snackbar.make(mConstraintLayout, "Already Signed in", Snackbar.LENGTH_SHORT)
+                    .show();*/
 
-            // Obtain the config values
-            //TODO: for testing masterworkflow object
-            //getConfigValues();
+            // check if we already have the config values
 
             // TODO: for testing only, added always on registration and commented get config vavlues
             //registerInstitutionForRemoteConfig();
-            getConfigValues();
-
-            //test_firebase_so_ques();
+            if(!haveConfigValues()){
+                getConfigValues();
+            }
+            else{
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        moveToStageActivity();
+                    }
+                }, 2000);
+            }
 
         }
         else {
@@ -116,6 +124,15 @@ public class SetupActivity extends AppCompatActivity {
         }
 
         startTtsService();
+    }
+
+    private boolean haveConfigValues(){
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.PREF_FILE_MASTERWORKFLOW), Context.MODE_PRIVATE);
+        String config_json = preferences.getString(getString(R.string.PREF_KEY_MASTERWORKFLOW), "NOPREF");
+        if(config_json.equals("NOPREF")){
+            return false;
+        }
+        return true;
     }
 
     private void startTtsService(){
@@ -138,6 +155,7 @@ public class SetupActivity extends AppCompatActivity {
         // Clearing the flags for animation sake
         //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         // TODO: Fix the class naming scheme
+
         startActivity(intent, activityOptionsCompat.toBundle());
 
         // TODO: fix the activity finish animation for facilitating clean shared element view transition
