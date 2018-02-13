@@ -97,13 +97,6 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        /*SharedPreferences sharedPreferences = getActivity()
-                        .getSharedPreferences(getString(R.string.REMOTE_CONFIG_PREFERENCE), Context.MODE_PRIVATE);
-        Gson gson = new Gson();
-        String preference_object_json = sharedPreferences.getString(getString(R.string.CONFIGURATION_PREFERENCE_KEY), "");
-
-        PreferencesModel preferencesModel = gson.fromJson(preference_object_json, PreferencesModel.class);
-        mSurveyPreferenceModel = preferencesModel.getSurveyPreferenceModel();*/
 
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_survey, container, false);
@@ -205,24 +198,6 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(survey_item_name);
-       /* builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int j) {
-                survey_answers.put(survey_item_name, options[j]);
-                Log.d(TAG, "option selected = " + options[j]);
-                mEditTexts.get(i).setText(options[j]);
-            }
-        });*/
-        /*builder.setPositiveButton("Select", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int j) {
-                Log.d(TAG, "option selected");
-                if(TextUtils.isEmpty(survey_answers.get(survey_item_name))){
-                    survey_answers.put(survey_item_name, options[0]);
-                    mEditTexts.get(i).setText(options[0]);
-                }
-            }
-        });*/
 
         builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
             @Override

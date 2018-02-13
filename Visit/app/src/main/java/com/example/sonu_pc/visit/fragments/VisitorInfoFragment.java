@@ -65,6 +65,8 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private OnFragmentInteractionListener mListener;
     private OnVisitorInteractionListener mVisitorListener;
 
+    private static final String TTS_SPEECH_PREFIX_STRING = "Please tell your ";
+
     private boolean voiceRoutine = true;
 
     private static final int REQ_CODE_SPEECH_INPUT = 111;
@@ -103,11 +105,6 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
 
         //##############################################################################
-
-        //TODO : Remove this when the new tts service is working perfectly
-        //textToSpeech = new TextToSpeech(getContext(),this);
-        //textToSpeech.setOnUtteranceProgressListener(new ttsListener());
-
         initTtsObject();
         //##############################################################################
     }
@@ -236,7 +233,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
     public void showDialog() {
         // Create the fragment and show it as a dialog.
-        voiceServicesDialogFragment = VoiceServicesDialog.newInstance(mFocusedEditText.getHint().toString());
+        voiceServicesDialogFragment = VoiceServicesDialog.newInstance(TTS_SPEECH_PREFIX_STRING + mFocusedEditText.getHint().toString());
         voiceServicesDialogFragment.setTargetFragment(this, 1337);
         voiceServicesDialogFragment.show(getFragmentManager(), "dialog");
 
@@ -420,7 +417,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
 
     private void speakOut(String text){
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, REQ_CODE_TEXT_UTTERANCE);
+        textToSpeech.speak(TTS_SPEECH_PREFIX_STRING + text, TextToSpeech.QUEUE_FLUSH, null, REQ_CODE_TEXT_UTTERANCE);
     }
 
 

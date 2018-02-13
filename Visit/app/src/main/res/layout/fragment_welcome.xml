@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/iv_brand_logo"
-        android:layout_width="307dp"
-        android:layout_height="339dp"
+        android:layout_width="wrap_content"
+        android:layout_height="374dp"
         android:transitionName="@string/logo_transition_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

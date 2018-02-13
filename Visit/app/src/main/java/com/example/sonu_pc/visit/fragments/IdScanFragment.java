@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -50,7 +51,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     private String mPrefObjJson;
 
     private ImageView mBrandLogo;
-    private ImageButton mImageButtonCamera;
+    private ImageView mImageButtonCamera;
     private CameraView mCameraView;
     private TextView mCameraHint;
 
@@ -102,7 +103,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_id_scan, container, false);
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
-        mImageButtonCamera = (ImageButton) view.findViewById(R.id.imageButton_camera);
+        mImageButtonCamera = view.findViewById(R.id.image_camera);
         mCameraView = (CameraView) view.findViewById(R.id.camera);
         mCameraHint = view.findViewById(R.id.tv_camera_hint);
 
@@ -160,7 +161,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         int id = v.getId();
         switch (id){
-            case R.id.imageButton_camera:
+            case R.id.image_camera:
                 Toast.makeText(getActivity(), "Click!", Toast.LENGTH_SHORT).show();
                 mCameraView.capturePicture();
                 //TODO: move to the next fragment only when the image capture is complete

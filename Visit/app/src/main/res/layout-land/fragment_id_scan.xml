@@ -3,61 +3,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.sonu_pc.visit.fragments.IdScanFragment">
+    tools:context="com.example.sonu_pc.visit.fragments.IdScanFragment"
+    tools:layout_editor_absoluteY="25dp">
 
     <!-- TODO: Update blank fragment layout -->
 
     <com.otaliastudios.cameraview.CameraView
         android:id="@+id/camera"
-        android:layout_width="306dp"
-        android:layout_height="379dp"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="212dp"
         android:background="@drawable/view_rounded_corner"
         android:keepScreenOn="true"
         app:cameraFacing="front"
-        app:layout_constraintBottom_toTopOf="@+id/image_camera"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_camera_hint">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="113dp">
 
     </com.otaliastudios.cameraview.CameraView>
 
     <TextView
         android:id="@+id/tv_camera_hint"
+        style="@style/Base.DialogWindowTitle.AppCompat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Your camera hint goes here"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_brand_logo" />
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@+id/camera"
+        app:layout_constraintEnd_toEndOf="@+id/camera"
+        app:layout_constraintStart_toStartOf="@+id/camera"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_brand_logo"
         android:layout_width="1dp"
         android:layout_height="1dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:src="@drawable/spectrum_5"
         android:transitionName="@string/logo_transition_name"
         android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:layout_editor_absoluteX="640dp"
+        tools:layout_editor_absoluteY="8dp" />
 
     <ImageView
         android:id="@+id/image_camera"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:src="@drawable/ic_photo_camera_black_24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/camera"
+        tools:layout_editor_absoluteY="345dp" />
 
 </android.support.constraint.ConstraintLayout>

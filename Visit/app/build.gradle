@@ -23,6 +23,7 @@ android {
 dependencies {
 
 
+
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -38,6 +39,8 @@ dependencies {
     compile 'jp.wasabeef:picasso-transformations:2.1.2'
     compile 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
 
+    // Analytics
+    implementation 'com.google.firebase:firebase-core:11.6.2'
     // Firestore
     implementation 'com.google.firebase:firebase-firestore:11.6.2'
 
@@ -54,6 +57,8 @@ dependencies {
     // Remote Config
     implementation 'com.google.firebase:firebase-config:11.6.2'
 
+    // Crash Reporting
+    implementation 'com.google.firebase:firebase-crash:11.6.2'
     // Gson
     compile 'com.google.code.gson:gson:2.8.2'
     testCompile 'junit:junit:4.12'

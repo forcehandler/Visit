@@ -100,6 +100,15 @@ public class VoiceServicesDialog extends DialogFragment implements TextToSpeech.
     }
 
     @Override
+    public void onStop() {
+        if(sr != null){
+            Log.d(TAG, "destroyed speech recognition reference to prevent leak");
+            sr.destroy();
+        }
+        super.onStop();
+    }
+
+    @Override
     public void onInit(int i) {
 
     }
