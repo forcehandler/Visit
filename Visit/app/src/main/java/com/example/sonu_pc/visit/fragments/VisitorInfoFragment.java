@@ -67,7 +67,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
     private static final String TTS_SPEECH_PREFIX_STRING = "Please tell your ";
 
-    private boolean voiceRoutine = true;
+    private boolean voiceRoutine = false;
 
     private static final int REQ_CODE_SPEECH_INPUT = 111;
 

@@ -186,6 +186,36 @@ public class SetupActivity extends AppCompatActivity {
                 });
     }
 
+    private void checkUserAlreadyRegistered(){
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference(FirebaseAuth.getInstance().getUid());
+        mDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                try{
+                    MasterWorkflow masterWorkflow = dataSnapshot.getValue(MasterWorkflow.class);
+                    if(masterWorkflow != null){
+                        Log.d(TAG, "user already registered, fetching old values!!");
+                        getConfigValues();
+                    }
+                    else {
+                        Log.d(TAG, "user not already registered, registering....");
+                        registerInstitutionForRemoteConfig();
+                    }
+                }
+                catch (Exception e){
+                    Log.d(TAG, "NEW USER, registering the user on realtime database with default config");
+                    //TODO: Check this one out!!
+                    registerInstitutionForRemoteConfig();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
 
     private void getConfigValues(){
         Log.d(TAG, "getting config values");
@@ -335,7 +365,11 @@ public class SetupActivity extends AppCompatActivity {
                             .show();
                     // First time registration of institution on realtime database for remote config
 
-                    registerInstitutionForRemoteConfig();
+                    //TODO: commenting for testing the already user exist function
+                    //registerInstitutionForRemoteConfig();
+
+                    //################################################33
+                    checkUserAlreadyRegistered();
 
                 } else {
                     // Sign in failed
