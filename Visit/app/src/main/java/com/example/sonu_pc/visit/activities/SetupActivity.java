@@ -230,7 +230,7 @@ public class SetupActivity extends AppCompatActivity {
                     Log.d(TAG, "children " + child.getKey());
                 }
 
-                DataSnapshot child_map = dataSnapshot.child(dataSnapshot.getChildren().iterator().next().getKey());
+                DataSnapshot child_map = dataSnapshot.child(MasterWorkflow.WORKFLOW_MAP_KEY);  // Name of the map variable in the MasterWorkflow
                 // Now we can have multiple workflows within a map so iterate over each workflow and substitute for the order of screens
                 for(DataSnapshot workflow: child_map.getChildren()){
                     Log.d(TAG, "workflow name = " + workflow.getKey());

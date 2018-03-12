@@ -131,13 +131,13 @@ public class VisitUtils {
         // Workflow1
         PreferencesModel preferencesModel = new PreferencesModel();
         preferencesModel.setSignup_time(System.currentTimeMillis());
-        preferencesModel.setStage1(true);
+       /* preferencesModel.setStage1(true);
         preferencesModel.setStage2(true);
         preferencesModel.setStage3(false);
         preferencesModel.setStage4(false);
         preferencesModel.setStage5(false);
 
-        preferencesModel.setInstituteEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        preferencesModel.setInstituteEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());*/
 
         // Setup the workflow1
         ArrayList<Preference> workflow_order = new ArrayList<>();
@@ -153,6 +153,7 @@ public class VisitUtils {
         LinkedHashMap<String, PreferencesModel> workflows_map = new LinkedHashMap<String, PreferencesModel>();
         workflows_map.put("Enquiry_workflow", preferencesModel);
         masterWorkflow.setWorkflows_map(workflows_map);
+        masterWorkflow.setInstituteEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
         return masterWorkflow;
 

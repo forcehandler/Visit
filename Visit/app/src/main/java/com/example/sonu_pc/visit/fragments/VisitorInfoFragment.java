@@ -249,9 +249,9 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         Log.d(TAG, "received data from speech dialog");
         mFocusedEditText.setText(s);
 
-        if(isVoiceOnlyRoutineEnabled() && moveFocusToNextEditText()){       // moveFocus function moves cursor to next et and reports if it was
+        if(moveFocusToNextEditText() && isVoiceOnlyRoutineEnabled()){       // moveFocus function moves cursor to next et and reports if it was
                                                                             // successful
-            beginAutomaticVoiceOnlyRoutine();           // Don't want delay when moving between edittexts
+            beginAutomaticVoiceOnlyRoutine();           // Don't want delay when moving between edit_texts
         }
     }
 

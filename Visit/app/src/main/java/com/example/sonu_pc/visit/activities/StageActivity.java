@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -52,7 +53,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -351,6 +355,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
     private void uploadPhotos(CollectionReference photoCollectionRef, List<Pair<String,Uri>> photosList){
 
+
         Map<String, String> photoKeyNameMap = new HashMap<>();
         for(Pair<String, Uri> pair : photosList){
             photoKeyNameMap.put(pair.first, visitor_id);
@@ -362,8 +367,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             }
         });
 
-        //upload the photos to firestore storage
-
         FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReference();
@@ -374,6 +377,8 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         for(Pair<String, Uri> pair : photosList){
             Uri file = pair.second;
             final String foldername = pair.first;
+
+            //upload the photos to firestore storage
 
             StorageReference imageRef = workflowRef.child(foldername).child(visitor_id);
             UploadTask uploadTask = imageRef.putFile(file);
@@ -388,11 +393,39 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "Unsuccesful in uploading image: " + foldername);
+                    Log.d(TAG, "Unsuccessful in uploading image: " + foldername);
                 }
             });
         }
     }
+
+   /* private void writeBitmapToStorage(Bitmap bitmap){
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+
+    }
+
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            writeBitmapToStorage(bitmap);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+        
+    };*/
+
 
     //##########################################################################################
 

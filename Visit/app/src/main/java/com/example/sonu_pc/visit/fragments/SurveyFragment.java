@@ -204,7 +204,12 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
             public void onClick(DialogInterface dialogInterface, int j) {
                 survey_answers.put(survey_item_name, options[j]);
                 Log.d(TAG, "option selected = " + options[j]);
-                mEditTexts.get(i).setText(options[j]);
+                if(options[j].toLowerCase().equals("other") || options[j].toLowerCase().equals("others")){
+                    othersOptionSelected(i);
+                }
+                else {
+                    mEditTexts.get(i).setText(options[j]);
+                }
                 dialogInterface.dismiss();
             }
         });
@@ -213,6 +218,11 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         Dialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+    }
+
+    private void othersOptionSelected(int i){
+        Log.d(TAG, "other option selected");
+        mEditTexts.get(i).performClick();
     }
 
     public boolean isEverythingAllRight(){

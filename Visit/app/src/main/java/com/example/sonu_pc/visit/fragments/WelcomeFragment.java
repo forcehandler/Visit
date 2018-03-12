@@ -104,11 +104,14 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
 
         //TODO: Check if the mapping order stays the same for button and workflow
         for(String key : map.keySet()){
-            Button btn = buttonList.get(button_counter++);
-            btn.setVisibility(View.VISIBLE);
-            btn.setText(key);
-            btn.setOnClickListener(this);
-            button_workflow_map.put(btn.getId(), key);
+            if(button_counter < 3) {
+                Button btn = buttonList.get(button_counter++);
+                Log.d(TAG, "Adding workflow button: " + key);
+                btn.setVisibility(View.VISIBLE);
+                btn.setText(key);
+                btn.setOnClickListener(this);
+                button_workflow_map.put(btn.getId(), key);
+            }
         }
 
         //mButtonQrSignIn.setOnClickListener(this);
@@ -148,47 +151,10 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        Intent intent = null;
+        Intent intent;
         int id = v.getId();
 
-        View sharedView = mImageViewBrandLogo;
-        String transitionName = mImageViewBrandLogo.getTransitionName();
-
-        ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), sharedView, transitionName);
-
         switch (id){
-            /*case R.id.btn_signup:
-                View sharedView = mImageViewBrandLogo;
-                String transitionName = mImageViewBrandLogo.getTransitionName();
-
-                ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), sharedView, transitionName);
-                intent = new Intent(getActivity(), SignUpActivity.class);
-                //intent.putExtra("workflow_name", )
-                startActivity(intent, activityOptionsCompat.toBundle());
-                break;*/
-
-
-            // TODO: Integrating Welcome fragment in stage activity
-            /*case R.id.button1:
-
-                *//*intent = new Intent(getActivity(), StageActivity.class);
-                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);*//*
-                break;
-
-            case R.id.button2:
-
-                *//*intent = new Intent(getActivity(), StageActivity.class);
-                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);*//*
-                break;
-
-            case R.id.button3:
-
-                *//*intent = new Intent(getActivity(), StageActivity.class);
-                intent.putExtra(getString(R.string.INTENT_WORKFLOW_SELECT_KEY), button_workflow_map.get(id));
-                startActivity(intent);*//*
-                break;*/
 
             case R.id.button1:
             case R.id.button2:

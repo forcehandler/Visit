@@ -1,3 +1,4 @@
+/*
 package com.example.sonu_pc.visit.activities;
 
 import android.content.Context;
@@ -397,7 +398,8 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
         });
 
         // Add this visitor to the list
-        /*visitors.add(couponModel).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        */
+/*visitors.add(couponModel).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 Snackbar.make(findViewById(android.R.id.content), "Successfully added the visitor", Snackbar.LENGTH_SHORT)
@@ -410,7 +412,8 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
                         Snackbar.make(findViewById(android.R.id.content), "Failed to add the visitor", Snackbar.LENGTH_SHORT)
                                 .show();
                     }
-                });*/
+                });*//*
+
     }
 
     private String uploadFaceImage(CouponModel model, String filename){
@@ -492,9 +495,11 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
     private void printIdCard(){
         Log.d(TAG, "sending the model for printing");
 
-        /*ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        */
+/*ByteArrayOutputStream stream = new ByteArrayOutputStream();
         couponModel.getVisitor_face_photo().compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();*/
+        byte[] byteArray = stream.toByteArray();*//*
+
 
         Intent intent = new Intent(this, PrinterActivity.class);
         intent.putExtra(getString(R.string.intent_key_coupon), couponModel);
@@ -581,3 +586,4 @@ public class SignUpActivity extends AppCompatActivity implements VisitorInfoFrag
 
 
 }
+*/

@@ -11,6 +11,7 @@ import com.google.firebase.firestore.Exclude;
  * Created by sonu-pc on 20-12-2017.
  */
 
+/* DO not remove coupon Model, it is currently used for the printer module*/
 
 public class CouponModel implements Parcelable {
 
