@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.example.sonu_pc.visit.activities.QrScanner;
 import com.example.sonu_pc.visit.R;
+import com.example.sonu_pc.visit.activities.SignOutActivity;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.google.gson.Gson;
@@ -96,6 +97,8 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         buttonList.add(mButton_3);
 
         mButtonQrSignIn = view.findViewById(R.id.btn_qr_signin);
+
+        mButtonQrSignIn.setOnClickListener(this);
         mImageViewBrandLogo = view.findViewById(R.id.iv_brand_logo);
 
         button_workflow_map = new HashMap<>();
@@ -154,6 +157,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         Intent intent;
         int id = v.getId();
 
+        Log.d(TAG, "onClick: " + id);
         switch (id){
 
             case R.id.button1:
@@ -163,7 +167,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.btn_qr_signin:
-                intent = new Intent(getActivity(), QrScanner.class);
+                intent = new Intent(getActivity(), SignOutActivity.class);
                 startActivity(intent);
                 break;
         }

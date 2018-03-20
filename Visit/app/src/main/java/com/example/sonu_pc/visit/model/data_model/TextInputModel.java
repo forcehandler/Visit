@@ -1,5 +1,6 @@
 package com.example.sonu_pc.visit.model.data_model;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -8,12 +9,12 @@ import java.util.Map;
 
 public class TextInputModel extends Model{
 
-    private Map<String, String> text_input_data;
+    private LinkedHashMap<String, String> text_input_data;
 
     public TextInputModel() {
     }
 
-    public TextInputModel(Map<String, String> text_input_data) {
+    public TextInputModel(LinkedHashMap<String, String> text_input_data) {
         this.text_input_data = text_input_data;
     }
 
@@ -21,7 +22,7 @@ public class TextInputModel extends Model{
         return text_input_data;
     }
 
-    public void setText_input_data(Map<String, String> text_input_data) {
+    public void setText_input_data(LinkedHashMap<String, String> text_input_data) {
         this.text_input_data = text_input_data;
     }
 }

@@ -137,4 +137,7 @@
     <string name="class_type_firebase_pref">wipe</string>
     <string name="collection_ref_photos">photos</string>
     <string name="CLASS_CAMERA">CLASS_CAMERA</string>
+    <string name="KEY_WORKFLOW_PREF_SIGNIN_TIME">signInTime</string>
+    <string name="KEY_WORKFLOW_PREF_IS_SIGNEDOUT">isSignedOut</string>
+    <string name="KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT">isWorkflowForSignOut</string>
 </resources>

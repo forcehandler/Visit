@@ -148,6 +148,8 @@ public class VisitUtils {
         workflow_order.add(thankYouPreference);
 
         preferencesModel.setOrder_of_screens(workflow_order);
+        preferencesModel.setWorkflowForSignOut(true);
+
         // Create master workflow object
         MasterWorkflow masterWorkflow = new MasterWorkflow();
         LinkedHashMap<String, PreferencesModel> workflows_map = new LinkedHashMap<String, PreferencesModel>();

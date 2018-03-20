@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -36,9 +37,8 @@
             android:name=".activities.DiscoveryActivity"
             android:label="@string/app_title" />
 
-        <!--Not required anymore except for some image uploading code-->
-        <!--<activity android:name=".activities.SignUpActivity" />-->
-
+        <!-- Not required anymore except for some image uploading code -->
+        <!-- <activity android:name=".activities.SignUpActivity" /> -->
 
         <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.MasterActivity" />
@@ -59,7 +59,7 @@
         <service
             android:name=".services.TextToSpeechService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <receiver
             android:name=".services.BroadcastReceiverOnBootComplete"
@@ -70,13 +70,17 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
+
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
+
                 <data android:scheme="package" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".activities.SignOutActivity"></activity>
     </application>
 
 </manifest>

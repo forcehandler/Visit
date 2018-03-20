@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -202,8 +204,9 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                     if (mVisitorListener != null) {
 
                         TextInputModel textInputModel = new TextInputModel();
-                        Map<String, String> text_data = new HashMap<>();
+                        LinkedHashMap<String, String> text_data = new LinkedHashMap<>();
                         for (int i = 0; i < mTextInputPreferenceModel.getHints().size(); i++) {
+                            Log.d(TAG, "adding hint: " + mTextInputPreferenceModel.getHints().get(i));
                             text_data.put(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
                         }
                         textInputModel.setText_input_data(text_data);

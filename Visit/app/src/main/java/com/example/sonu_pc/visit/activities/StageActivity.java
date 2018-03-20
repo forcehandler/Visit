@@ -107,6 +107,35 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
 
+        final View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+                        // Note that system bars will only be "visible" if none of the
+                        // LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            // TODO: The system bars are visible. Make any desired
+                            decorView.setSystemUiVisibility(
+                                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+// again hide it
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                        }
+                    }
+                });
+
         setContentView(R.layout.activity_stage);
 
         // Initialize the views
@@ -330,17 +359,26 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         photosCollectionRef = visitorsCollectionRef.document(visitor_id)
                 .collection(getString(R.string.collection_ref_photos));
 
-        ArrayList<String> questions = new ArrayList<>(quesAnsMap.keySet());
+        /*ArrayList<String> questions = new ArrayList<>(quesAnsMap.keySet());
         Map<String, List<String>> questionsMap = new HashMap<>();
-        questionsMap.put("questions", questions);
+        questionsMap.put("questions", questions);*/
 
+        // If the workflow is meant for SignOut purposes, add the signIn and the signIn status to the visitor info
+        if(mSelectedWorkflow != null && mSelectedWorkflow.isWorkflowForSignOut()){
+            quesAnsMap.put(getString(R.string.KEY_WORKFLOW_PREF_SIGNIN_TIME), visitor_id);
+            quesAnsMap.put(getString(R.string.KEY_WORKFLOW_PREF_IS_SIGNEDOUT), "0");
+            // Add a field to identify the SignOut enabled workflow in the firestore
+            Map<String, Boolean> map = new HashMap<>();
+            map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
+            workflowCollectionRef.document(workflow).set(map);
+        }
 
-        workflowCollectionRef.document(workflow).set(questionsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+        /*workflowCollectionRef.document(workflow).set(questionsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "uploaded the list of questions in " + workflow + " workflow");
             }
-        });
+        });*/
 
         visitorsCollectionRef.document(visitor_id).set(quesAnsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
