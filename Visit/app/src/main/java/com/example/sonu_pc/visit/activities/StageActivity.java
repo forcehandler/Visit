@@ -3,7 +3,6 @@ package com.example.sonu_pc.visit.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -17,7 +16,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.sonu_pc.visit.R;
@@ -53,11 +51,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -96,7 +90,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
     private int curr_stage = 0;
 
     //######################################################################################
-    private LinkedHashMap<String, String> quesAnsMap;
+    private List<Pair<String,String>> quesAnsPairList;
 
 
     @Override
@@ -164,7 +158,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         mDataModelsMap = new HashMap<>();
 
         //############################################################################
-        quesAnsMap = new LinkedHashMap<>();
+        quesAnsPairList = new ArrayList<>();
         photoUriPairList = new ArrayList<>();
 
         //############################################################################
@@ -318,33 +312,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
        return brandImage;
     }
 
-
-    /*private void uploadDataModel(){
-
-        Map<String, Map<String, Model>> visitor_data_map = new HashMap<>();
-        visitor_data_map.put(workflow_name, mDataModelsMap);
-        mVisitorDataModel.setVisitor_model(visitor_data_map);
-
-        CollectionReference visitor_reference = mFirestore.collection("institutes")
-                .document(FirebaseAuth.getInstance().getUid()).collection("visitors");
-
-        // Get the time of signUp
-        String visitor_id = System.currentTimeMillis() + "";  //for now this will be the visitor uid
-
-        visitor_reference.document(visitor_id).set(mVisitorDataModel).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                //showSnackbar("Successfully uploaded the data model");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //showSnackbar("Failed to addd the data model");
-            }
-        });
-    }*/
-
-
     //############################################################################3
     private void uploadWorkflow(final String workflow){
 
@@ -359,26 +326,45 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         photosCollectionRef = visitorsCollectionRef.document(visitor_id)
                 .collection(getString(R.string.collection_ref_photos));
 
-        /*ArrayList<String> questions = new ArrayList<>(quesAnsMap.keySet());
+        /*ArrayList<String> questions = new ArrayList<>(quesAnsPairList.keySet());
         Map<String, List<String>> questionsMap = new HashMap<>();
         questionsMap.put("questions", questions);*/
 
         // If the workflow is meant for SignOut purposes, add the signIn and the signIn status to the visitor info
         if(mSelectedWorkflow != null && mSelectedWorkflow.isWorkflowForSignOut()){
-            quesAnsMap.put(getString(R.string.KEY_WORKFLOW_PREF_SIGNIN_TIME), visitor_id);
-            quesAnsMap.put(getString(R.string.KEY_WORKFLOW_PREF_IS_SIGNEDOUT), "0");
+            Pair<String, String> pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_SIGNIN_TIME), visitor_id);
+            quesAnsPairList.add(pair);
+            pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_IS_SIGNEDOUT), "0");
+            quesAnsPairList.add(pair);
             // Add a field to identify the SignOut enabled workflow in the firestore
-            Map<String, Boolean> map = new HashMap<>();
-            map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
-            workflowCollectionRef.document(workflow).set(map);
+            /*Map<String, Boolean> map = new HashMap<>();
+            map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);*/
+            workflowCollectionRef.document(workflow).update(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
         }
 
-        /*workflowCollectionRef.document(workflow).set(questionsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+        List<String> questionsList = new ArrayList<>();
+        Map<String, String> quesAnsMap = new LinkedHashMap<>();
+        for(Pair<String, String> pair : quesAnsPairList){
+            Log.d(TAG, "adding key : "  + pair.first);
+            quesAnsMap.put(pair.first, pair.second);
+            questionsList.add(pair.first);
+        }
+        for (Map.Entry<String, String> entry : quesAnsMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            Log.d(TAG, key + " found");
+        }
+        Map<String, Object> quesMap = new HashMap<>();
+        quesMap.put("questions", questionsList);
+
+        workflowCollectionRef.document(workflow).update(quesMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "uploaded the list of questions in " + workflow + " workflow");
             }
-        });*/
+        });
+
 
         visitorsCollectionRef.document(visitor_id).set(quesAnsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -437,34 +423,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         }
     }
 
-   /* private void writeBitmapToStorage(Bitmap bitmap){
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-
-    }
-
-    Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            writeBitmapToStorage(bitmap);
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-        }
-        
-    };*/
-
-
     //##########################################################################################
 
     private void showSnackbar(String message){
@@ -493,7 +451,10 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             mDataModelsMap.put(((TextInputPreferenceModel) mCurrentPreference).getPage_title(), textInputModel);
 
             //#######################################################################
-            quesAnsMap.putAll(textInputModel.getText_input_data());
+            for(Pair<String, String> pair : textInputModel.getText_input_data()){
+                quesAnsPairList.add(pair);
+            }
+            //quesAnsPairList.putAll(textInputModel.getText_input_data());
         }
         else{
             Log.e(TAG, "current preference object did not match the required object, check onTextInputInteraction");
@@ -508,7 +469,10 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             mDataModelsMap.put(((SurveyPreferenceModel) mCurrentPreference).getSurvey_title(), surveyModel);
 
             //########################################################################
-            quesAnsMap.putAll(surveyModel.getSurvey_results());
+            for(Pair<String, String> pair : surveyModel.getSurvey_results()){
+                quesAnsPairList.add(pair);
+            }
+            //quesAnsPairList.putAll(surveyModel.getSurvey_results());
         }
         else{
             Log.e(TAG, "current preference object did not match the required object, check onSurveyInteraction");

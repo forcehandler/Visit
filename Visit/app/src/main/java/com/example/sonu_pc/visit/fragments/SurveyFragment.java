@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.transition.TransitionInflater;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     // Map for storing survey ques, ans
 
-    final Map<String, String> survey_answers = new HashMap<>();
+    final List<Pair<String,String>> survey_answers = new ArrayList<>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -202,7 +203,8 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         builder.setSingleChoiceItems(options, 0, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int j) {
-                survey_answers.put(survey_item_name, options[j]);
+                Pair<String, String> pair = new Pair<>(survey_item_name, options[j]);
+                survey_answers.add(pair);
                 Log.d(TAG, "option selected = " + options[j]);
                 if(options[j].toLowerCase().equals("other") || options[j].toLowerCase().equals("others")){
                     othersOptionSelected(i);

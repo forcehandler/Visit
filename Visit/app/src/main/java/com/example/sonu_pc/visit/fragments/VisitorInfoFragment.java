@@ -13,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
+import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -204,10 +205,11 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
                     if (mVisitorListener != null) {
 
                         TextInputModel textInputModel = new TextInputModel();
-                        LinkedHashMap<String, String> text_data = new LinkedHashMap<>();
+                        List<Pair<String,String>> text_data = new ArrayList<Pair<String, String>>();
                         for (int i = 0; i < mTextInputPreferenceModel.getHints().size(); i++) {
                             Log.d(TAG, "adding hint: " + mTextInputPreferenceModel.getHints().get(i));
-                            text_data.put(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
+                            Pair<String, String> pair = new Pair<>(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
+                            text_data.add(pair);
                         }
                         textInputModel.setText_input_data(text_data);
                         mVisitorListener.onTextInputInteraction(textInputModel);
