@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -42,8 +43,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class SetupActivity extends AppCompatActivity {
@@ -76,6 +81,8 @@ public class SetupActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progress_bar);
         mImageView = findViewById(R.id.brand_logo);
 
+        setBrandLogo();
+
         if(areAllPermissionsSatisfied()){
             Log.d(TAG, "all permissions are satisfied now");
             startSigninSequence();
@@ -88,6 +95,13 @@ public class SetupActivity extends AppCompatActivity {
 
     }
 
+    private void setBrandLogo(){
+        File file = new File(getFilesDir().getAbsolutePath(), "brand_logo.png");
+        Uri uri = Uri.fromFile(file);
+        if(file.exists()){
+            mImageView.setImageURI(uri);
+        }
+    }
     private void startSigninSequence(){
 
         Log.d(TAG, "starting sign in sequence");
@@ -290,7 +304,7 @@ public class SetupActivity extends AppCompatActivity {
 
 
                 //seeJsonObject(masterWorkflow);
-                moveToStageActivity();
+                getBrandLogo();
             }
 
             @Override
@@ -301,6 +315,33 @@ public class SetupActivity extends AppCompatActivity {
 
     }
 
+    private void getBrandLogo(){
+
+        // Download the logo in a file named brand_logo
+        File file = new File(getFilesDir().getAbsolutePath(), "brand_logo.png");
+        StorageReference storageReference = FirebaseStorage.getInstance()
+                .getReference(FirebaseAuth.getInstance().getUid() + "/Logo/brand_logo.png");
+
+        if(file.exists()){
+            Log.d(TAG, "file already exists");
+            Log.d(TAG, "delete file result: " + file.delete());
+        }
+        else{
+            storageReference.getFile(file).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Log.d(TAG, "Logo download successful");
+                    moveToStageActivity();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.e(TAG, "error downloading Logo");
+                }
+            });
+        }
+
+    }
     private boolean areAllPermissionsSatisfied(){
 
         if (ContextCompat.checkSelfPermission(this,

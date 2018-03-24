@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.transition.TransitionInflater;
@@ -28,6 +29,7 @@ import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +105,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         View view =  inflater.inflate(R.layout.fragment_survey, container, false);
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
+        setBrandLogo();
         mEditText1 = view.findViewById(R.id.editText1);
         mEditText2 = view.findViewById(R.id.editText2);
         mEditText3 = view.findViewById(R.id.editText3);
@@ -136,6 +139,14 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         }
 
         return view;
+    }
+
+    private void setBrandLogo(){
+        File file = new File(getActivity().getFilesDir().getAbsolutePath(), "brand_logo.png");
+        Uri uri = Uri.fromFile(file);
+        if(file.exists()){
+            mBrandLogo.setImageURI(uri);
+        }
     }
 
     private SurveyPreferenceModel getSurveyPreferenceModel(String json){

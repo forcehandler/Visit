@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +22,8 @@ import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
+
+import java.io.File;
 
 
 public class ThankYouFragment extends Fragment {
@@ -77,6 +80,7 @@ public class ThankYouFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_thank_you, container, false);
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
+        setBrandLogo();
         mThankYouTextView = view.findViewById(R.id.textView_thank_you);
         mThankYouTextView.setText(mThankYouPreference.getThank_you_text());
 
@@ -90,6 +94,14 @@ public class ThankYouFragment extends Fragment {
             }
         }, 2000); // 2 sec delay
         return view;
+    }
+
+    private void setBrandLogo(){
+        File file = new File(getActivity().getFilesDir().getAbsolutePath(), "brand_logo.png");
+        Uri uri = Uri.fromFile(file);
+        if(file.exists()){
+            mBrandLogo.setImageURI(uri);
+        }
     }
 
     @Override

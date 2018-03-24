@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.transition.TransitionInflater;
@@ -22,6 +23,7 @@ import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +90,7 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         buttonList = new ArrayList<>();
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
+        setBrandLogo();
         mButton_1 = view.findViewById(R.id.button1);
         mButton_2 = view.findViewById(R.id.button2);
         mButton_3 = view.findViewById(R.id.button3);
@@ -119,6 +122,15 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
 
         //mButtonQrSignIn.setOnClickListener(this);
         return view;
+    }
+
+
+    private void setBrandLogo(){
+        File file = new File(getActivity().getFilesDir().getAbsolutePath(), "brand_logo.png");
+        Uri uri = Uri.fromFile(file);
+        if(file.exists()){
+            mBrandLogo.setImageURI(uri);
+        }
     }
 
     private void initMasterWorkflow(){

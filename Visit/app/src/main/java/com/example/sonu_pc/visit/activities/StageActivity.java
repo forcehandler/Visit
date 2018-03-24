@@ -337,9 +337,9 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_IS_SIGNEDOUT), "0");
             quesAnsPairList.add(pair);
             // Add a field to identify the SignOut enabled workflow in the firestore
-            /*Map<String, Boolean> map = new HashMap<>();
-            map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);*/
-            workflowCollectionRef.document(workflow).update(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
+            Map<String, Boolean> map = new HashMap<>();
+            map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
+            workflowCollectionRef.document(workflow).set(map);
         }
 
 
@@ -352,7 +352,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         }
         for (Map.Entry<String, String> entry : quesAnsMap.entrySet()) {
             String key = entry.getKey();
-            String value = entry.getValue();
             Log.d(TAG, key + " found");
         }
         Map<String, Object> quesMap = new HashMap<>();
@@ -373,7 +372,9 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             }
         });
 
-        uploadPhotos(photosCollectionRef, photoUriPairList);
+        if(!photoUriPairList.isEmpty()) {
+            uploadPhotos(photosCollectionRef, photoUriPairList);
+        }
     }
 
 

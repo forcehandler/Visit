@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,7 @@ import com.example.sonu_pc.visit.services.TextToSpeechService;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -130,6 +132,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         View view = inflater.inflate(R.layout.fragment_visitor_info, container, false);
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
+        setBrandLogo();
         mEditText1 = view.findViewById(R.id.editText1);
         mEditText2 = view.findViewById(R.id.editText2);
         mEditText3 = view.findViewById(R.id.editText3);
@@ -169,6 +172,13 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         return view;
     }
 
+    private void setBrandLogo(){
+        File file = new File(getActivity().getFilesDir().getAbsolutePath(), "brand_logo.png");
+        Uri uri = Uri.fromFile(file);
+        if(file.exists()){
+            mBrandLogo.setImageURI(uri);
+        }
+    }
 
 
     @Override
