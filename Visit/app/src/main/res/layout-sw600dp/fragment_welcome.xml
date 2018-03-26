@@ -75,7 +75,7 @@
         android:layout_marginTop="8dp"
         android:text="Been Here Before"
         android:textColor="@color/colorAccent"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

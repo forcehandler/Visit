@@ -140,4 +140,5 @@
     <string name="KEY_WORKFLOW_PREF_SIGNIN_TIME">signInTime</string>
     <string name="KEY_WORKFLOW_PREF_IS_SIGNEDOUT">isSignedOut</string>
     <string name="KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT">isWorkflowForSignOut</string>
+    <string name="KEY_WORKFLOW_PREF_SIGNOUT_TIME">signOutTime</string>
 </resources>

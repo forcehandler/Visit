@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 
+import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.fragments.FaceIdFragment;
 import com.example.sonu_pc.visit.fragments.IdScanFragment;
@@ -59,12 +60,11 @@ import java.util.List;
 import java.util.Map;
 
 public class StageActivity extends AppCompatActivity implements WelcomeFragment.OnWelcomeFragmentInteractionListener,
-        VisitorInfoFragment.OnFragmentInteractionListener,
         FaceIdFragment.OnFragmentInteractionListener, NonDisclosureFragment.OnFragmentInteractionListener,
         VisitorInfoFragment.OnVisitorInteractionListener,
-        VisiteeInfoFragment.OnFragmentInteractionListener, IdScanFragment.OnFragmentInteractionListener ,
-        SurveyFragment.OnSurveyInteractionListener, SurveyFragment.OnFragmentInteractionListener,
-        ThankYouFragment.OnThankYouFragmentInteractionListener, IdScanFragment.OnIdPhotoTakenListener{
+        VisiteeInfoFragment.OnFragmentInteractionListener,
+        SurveyFragment.OnSurveyInteractionListener,
+        ThankYouFragment.OnThankYouFragmentInteractionListener, IdScanFragment.OnIdPhotoTakenListener, FragmentCancelListener{
 
     private static final String TAG = StageActivity.class.getSimpleName();
 
@@ -336,6 +336,8 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             quesAnsPairList.add(pair);
             pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_IS_SIGNEDOUT), "0");
             quesAnsPairList.add(pair);
+            pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_SIGNOUT_TIME), "0");
+            quesAnsPairList.add(pair);
             // Add a field to identify the SignOut enabled workflow in the firestore
             Map<String, Boolean> map = new HashMap<>();
             map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
@@ -430,6 +432,10 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         Snackbar.make(mConstraintLayout, message, Snackbar.LENGTH_SHORT).show();
     }
 
+    private void moveToNextFragment(){
+        Log.d(TAG, "moving to next fragment");
+        handleFragments();
+    }
 
     //[Implemented Methods]
     @Override
@@ -456,6 +462,8 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                 quesAnsPairList.add(pair);
             }
             //quesAnsPairList.putAll(textInputModel.getText_input_data());
+
+            moveToNextFragment();
         }
         else{
             Log.e(TAG, "current preference object did not match the required object, check onTextInputInteraction");
@@ -474,30 +482,24 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                 quesAnsPairList.add(pair);
             }
             //quesAnsPairList.putAll(surveyModel.getSurvey_results());
+
+            moveToNextFragment();
         }
         else{
-            Log.e(TAG, "current preference object did not match the required object, check onSurveyInteraction");
+            Log.e(TAG, "Current preference object did not match the required object, check onSurveyInteraction");
         }
     }
 
     @Override
     public void OnThankYouFragmentInteraction() {
-
-        // TODO: Integrating Welcome fragment in stage activity
-        /*Intent intent = new Intent(this, MasterActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);*/
         initWelcomeFragment();
     }
 
-    @Override
-    public void onIdPhotoTaken(Bitmap IdPhoto) {
-
-    }
 
     @Override
     public void onPhotoTaken(CameraModel cameraModel) {
         photoUriPairList.add(cameraModel.getCameraKeyUriPair());
+        moveToNextFragment();
     }
 
     //[Disable back button]
@@ -528,4 +530,9 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         }
     }
 
+    @Override
+    public void onCancelPressed() {
+        Log.d(TAG, "cancel pressed");
+        initWelcomeFragment();
+    }
 }

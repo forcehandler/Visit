@@ -118,6 +118,15 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
                 btn.setOnClickListener(this);
                 button_workflow_map.put(btn.getId(), key);
             }
+            try {
+                if (map.get(key).isWorkflowForSignOut()) {
+                    mButtonQrSignIn.setVisibility(View.VISIBLE);
+                    mButtonQrSignIn.setText("Sign Out");
+                }
+            }catch (Exception e){
+                Log.e(TAG, "Error while checking for wf's isWorkflowForSignOut function");
+                Log.e(TAG, e.toString());
+            }
         }
 
         //mButtonQrSignIn.setOnClickListener(this);

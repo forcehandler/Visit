@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.example.sonu_pc.visit.model.data_model.SurveyModel;
@@ -39,7 +40,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     private static final String TAG = SurveyFragment.class.getSimpleName();
 
-    private ImageView mBrandLogo;
+    private ImageView mBrandLogo, mCancel;
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
     private TextView mTextViewTitle;
     private Button mButtonNext;
@@ -50,7 +51,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     // Map for storing survey ques, ans
 
-    final List<Pair<String,String>> survey_answers = new ArrayList<>();
+    final List<Pair<String, String>> survey_answers = new ArrayList<>();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,10 +62,11 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     private String mPrefObjJson;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
     private OnSurveyInteractionListener mSurveyListener;
+    private FragmentCancelListener mCancelListener;
 
     private SurveyModel surveyModel = new SurveyModel();
+
     public SurveyFragment() {
         // Required empty public constructor
     }
@@ -91,8 +93,8 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
             mParam2 = getArguments().getString(ARG_PARAM2);
 
             mSurveyPreferenceModel = getSurveyPreferenceModel(mPrefObjJson);
-            Log.d(TAG, "survey pref obj = " +  mSurveyPreferenceModel.getSurvey_title());
-            Log.d(TAG, "survey pref obj = " +  mSurveyPreferenceModel.getWipe());
+            Log.d(TAG, "survey pref obj = " + mSurveyPreferenceModel.getSurvey_title());
+            Log.d(TAG, "survey pref obj = " + mSurveyPreferenceModel.getWipe());
         }
         mEditTexts = new ArrayList<>();
     }
@@ -102,7 +104,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_survey, container, false);
+        View view = inflater.inflate(R.layout.fragment_survey, container, false);
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         setBrandLogo();
@@ -110,6 +112,9 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mEditText2 = view.findViewById(R.id.editText2);
         mEditText3 = view.findViewById(R.id.editText3);
         mEditText4 = view.findViewById(R.id.editText4);
+
+        mCancel = view.findViewById(R.id.cancel);
+        mCancel.setOnClickListener(this);
 
         mTextViewTitle = view.findViewById(R.id.textView1);
 
@@ -121,7 +126,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mTextViewTitle.setText(mSurveyPreferenceModel.getSurvey_title());
 
         // Remove the unnecessary edit texts
-        for(int i = mSurveyPreferenceModel.getSurvey_item_name().size(); i <= 3; i++){
+        for (int i = mSurveyPreferenceModel.getSurvey_item_name().size(); i <= 3; i++) {
             mEditTexts.get(i).setVisibility(View.GONE);
         }
 
@@ -133,7 +138,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mButtonNext.setOnClickListener(this);
 
         // Set the hint text for visible edit texts
-        for(int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++){
+        for (int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++) {
             mEditTexts.get(i).setHint(mSurveyPreferenceModel.getSurvey_item_name().get(i));
             mEditTexts.get(i).setOnTouchListener(this);
         }
@@ -141,15 +146,15 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         return view;
     }
 
-    private void setBrandLogo(){
+    private void setBrandLogo() {
         File file = new File(getActivity().getFilesDir().getAbsolutePath(), "brand_logo.png");
         Uri uri = Uri.fromFile(file);
-        if(file.exists()){
+        if (file.exists()) {
             mBrandLogo.setImageURI(uri);
         }
     }
 
-    private SurveyPreferenceModel getSurveyPreferenceModel(String json){
+    private SurveyPreferenceModel getSurveyPreferenceModel(String json) {
         Gson gson = GsonUtils.getGsonParser();
         SurveyPreferenceModel surveyPreferenceModel = gson.fromJson(json, SurveyPreferenceModel.class);
         return surveyPreferenceModel;
@@ -158,11 +163,12 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+
+        if (context instanceof FragmentCancelListener) {
+            mCancelListener = (FragmentCancelListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement FragmentCancelListener");
         }
 
         if (context instanceof SurveyFragment.OnSurveyInteractionListener) {
@@ -176,35 +182,37 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mSurveyListener = null;
     }
 
     @Override
     public void onClick(View view) {
 
-        if(view == mButtonNext) {
+        if (view == mButtonNext) {
             if (isEverythingAllRight()) {
-                if (mListener != null) {
-                    if (mSurveyListener != null) {
-                        String item1 = mEditText1.getText().toString();
-                        String item2 = mEditText2.getText().toString();
-                        String item3 = mEditText3.getText().toString();
-                        Log.d(TAG, item1 + ", " + item2 + ", " + item3);
+                if (mSurveyListener != null) {
+                    String item1 = mEditText1.getText().toString();
+                    String item2 = mEditText2.getText().toString();
+                    String item3 = mEditText3.getText().toString();
+                    Log.d(TAG, item1 + ", " + item2 + ", " + item3);
 
-                        Log.d(TAG, "survey answers = " + survey_answers.toString());
-                        surveyModel.setSurvey_results(survey_answers);
-                        mSurveyListener.onSurveyInteraction(surveyModel);
-                    }
-                    // First send out the info and then call for change of fragment
-                    mListener.onFragmentInteraction(1, 2);
+                    Log.d(TAG, "survey answers = " + survey_answers.toString());
+                    surveyModel.setSurvey_results(survey_answers);
+                    mSurveyListener.onSurveyInteraction(surveyModel);
                 }
+
+            }
+        }
+        if(view == mCancel){
+            if(mCancelListener != null){
+                mCancelListener.onCancelPressed();
             }
         }
     }
 
-    private void createOptionsDialog(final int i){
+    private void createOptionsDialog(final int i) {
         ArrayList<String> optionsList = mSurveyPreferenceModel.getSurvey_item_options().get(i);
-        final String [] options = optionsList.toArray(new String[optionsList.size()]);
+        final String[] options = optionsList.toArray(new String[optionsList.size()]);
 
         final String survey_item_name = mSurveyPreferenceModel.getSurvey_item_name().get(i);
 
@@ -217,13 +225,22 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
                 Pair<String, String> pair = new Pair<>(survey_item_name, options[j]);
                 survey_answers.add(pair);
                 Log.d(TAG, "option selected = " + options[j]);
-                if(options[j].toLowerCase().equals("other") || options[j].toLowerCase().equals("others")){
+                if (options[j].toLowerCase().equals("other") || options[j].toLowerCase().equals("others")) {
                     othersOptionSelected(i);
-                }
-                else {
+                } else {
                     mEditTexts.get(i).setText(options[j]);
                 }
                 dialogInterface.dismiss();
+            }
+        }).setPositiveButton("SELECT", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int j) {
+                Log.d(TAG, "option selected");
+                if (TextUtils.isEmpty(mEditTexts.get(i).getText().toString())) {
+                    Pair<String, String> pair = new Pair<>(survey_item_name, options[0]);
+                    survey_answers.add(pair);
+                    mEditTexts.get(i).setText(options[0]);
+                }
             }
         });
 
@@ -233,19 +250,19 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         dialog.show();
     }
 
-    private void othersOptionSelected(int i){
+    private void othersOptionSelected(int i) {
         Log.d(TAG, "other option selected");
         mEditTexts.get(i).performClick();
     }
 
-    public boolean isEverythingAllRight(){
+    public boolean isEverythingAllRight() {
 
         boolean isGood = true;
 
-        for(int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++){
+        for (int i = 0; i < mSurveyPreferenceModel.getSurvey_item_name().size(); i++) {
             EditText et = mEditTexts.get(i);
             String input = et.getText().toString();
-            if(TextUtils.isEmpty(input)){
+            if (TextUtils.isEmpty(input)) {
                 isGood = false;
                 et.setError("Please select " + et.getHint());
             }
@@ -255,8 +272,8 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        if(MotionEvent.ACTION_UP == motionEvent.getAction()){
-            switch (view.getId()){
+        if (MotionEvent.ACTION_UP == motionEvent.getAction()) {
+            switch (view.getId()) {
                 case R.id.editText1:
                     createOptionsDialog(0);
                     Log.d(TAG, "focussed = " + 0);
@@ -278,13 +295,10 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         return true;
     }
 
-    public ImageView getSharedImageView(){
+    public ImageView getSharedImageView() {
         return mBrandLogo;
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(int direction, int stageNo);
-    }
     public interface OnSurveyInteractionListener {
         void onSurveyInteraction(SurveyModel surveyModel);
     }

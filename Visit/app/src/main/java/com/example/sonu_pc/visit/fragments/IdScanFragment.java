@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.model.data_model.CameraModel;
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
@@ -31,15 +32,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link IdScanFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link IdScanFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class IdScanFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = IdScanFragment.class.getSimpleName();
@@ -59,8 +51,8 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
 
     private CameraPreference mCameraPreference;
 
-    private OnFragmentInteractionListener mListener;
     private OnIdPhotoTakenListener mIdListener;
+    private FragmentCancelListener mCancelListener;
 
     public IdScanFragment() {}
 
@@ -116,11 +108,12 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+
+        if (context instanceof FragmentCancelListener) {
+            mCancelListener = (FragmentCancelListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement FragmentCancelListener");
         }
         if (context instanceof OnIdPhotoTakenListener) {
             mIdListener = (OnIdPhotoTakenListener) context;
@@ -133,7 +126,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mIdListener = null;
     }
 
 
@@ -166,6 +159,12 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
                 mCameraView.capturePicture();
                 //TODO: move to the next fragment only when the image capture is complete
                 break;
+            case R.id.cancel:
+                if(mCancelListener != null){
+                    mCancelListener.onCancelPressed();
+                }
+                break;
+
         }
     }
 
@@ -193,7 +192,6 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     private void sendCameraModel(Bitmap photo){
         if(mIdListener != null){
             Uri photoUri = saveImageToInternalStorage(mBitmapIdPhotoColor, visitor_name);
-            mIdListener.onIdPhotoTaken(mBitmapIdPhotoColor);
 
             CameraModel cameraModel = new CameraModel();
             Pair<String, Uri> pair = new Pair<>(mCameraPreference.getCamera_hint_text(), photoUri);
@@ -201,13 +199,6 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
             mIdListener.onPhotoTaken(cameraModel);
         }
 
-        moveToNext();
-    }
-
-    private void moveToNext(){
-        if(mListener != null){
-            mListener.onFragmentInteraction(1, 5);
-        }
     }
 
 
@@ -240,14 +231,9 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
     }
 
     //[Interfaces]
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument wipe and name
-        void onFragmentInteraction(int direction, int stageNo);
-    }
 
     // TODO: Transfer the photos to the Activity for passing it to the printer module and uploading to firebase
     public interface OnIdPhotoTakenListener{
-        void onIdPhotoTaken(Bitmap IdPhoto);
         void onPhotoTaken(CameraModel cameraModel);
     }
 }

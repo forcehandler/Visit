@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.SpeechRecognitionHelperActivity;
 import com.example.sonu_pc.visit.model.data_model.TextInputModel;
@@ -52,7 +53,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private static final String ARG_PREF_OBJ_JSON = "pref_obj_json";
     private static final String ARG_PARAM2 = "param2";
 
-    private ImageView mBrandLogo;
+    private ImageView mBrandLogo, mCancel;
     private EditText mEditText1, mEditText2, mEditText3, mEditText4;
     private TextView mTextViewTitle;
     private Button mButtonNext;
@@ -67,8 +68,8 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private String mPrefObjJson;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
     private OnVisitorInteractionListener mVisitorListener;
+    private FragmentCancelListener mCancelListener;
 
     private static final String TTS_SPEECH_PREFIX_STRING = "Please tell your ";
 
@@ -139,6 +140,9 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         mEditText4 = view.findViewById(R.id.editText4);
         microphone = view.findViewById(R.id.image_mic);
 
+        mCancel = view.findViewById(R.id.cancel);
+        mCancel.setOnClickListener(this);
+
         mFocusedEditText = mEditText1;
 
         mTextViewTitle = view.findViewById(R.id.textView1);
@@ -184,11 +188,11 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof FragmentCancelListener) {
+            mCancelListener = (FragmentCancelListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement FragmentCancelListener");
         }
         if (context instanceof OnVisitorInteractionListener) {
             mVisitorListener = (OnVisitorInteractionListener) context;
@@ -202,7 +206,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        mVisitorListener = null;
     }
 
     @Override
@@ -210,23 +214,20 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         if(v == mButtonNext){
             Toast.makeText(getActivity(), "Next Button Pressed", Toast.LENGTH_SHORT).show();
             if(isEverythingAllRight()) {
-                if (mListener != null) {
 
-                    if (mVisitorListener != null) {
+                if (mVisitorListener != null) {
 
-                        TextInputModel textInputModel = new TextInputModel();
-                        List<Pair<String,String>> text_data = new ArrayList<Pair<String, String>>();
-                        for (int i = 0; i < mTextInputPreferenceModel.getHints().size(); i++) {
-                            Log.d(TAG, "adding hint: " + mTextInputPreferenceModel.getHints().get(i));
-                            Pair<String, String> pair = new Pair<>(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
-                            text_data.add(pair);
-                        }
-                        textInputModel.setText_input_data(text_data);
-                        mVisitorListener.onTextInputInteraction(textInputModel);
+                    TextInputModel textInputModel = new TextInputModel();
+                    List<Pair<String,String>> text_data = new ArrayList<Pair<String, String>>();
+                    for (int i = 0; i < mTextInputPreferenceModel.getHints().size(); i++) {
+                        Log.d(TAG, "adding hint: " + mTextInputPreferenceModel.getHints().get(i));
+                        Pair<String, String> pair = new Pair<>(mTextInputPreferenceModel.getHints().get(i), mEditTexts.get(i).getText().toString());
+                        text_data.add(pair);
                     }
-                    // First send out the info and then call for change of fragment
-                    mListener.onFragmentInteraction(1, 1);
+                    textInputModel.setText_input_data(text_data);
+                    mVisitorListener.onTextInputInteraction(textInputModel);
                 }
+
             }
 
         }
@@ -239,6 +240,12 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             }
             else{
                 Log.e(TAG, "Did not select the edit text before pressing mic button");
+            }
+        }
+
+        if(v == mCancel){
+            if(mCancelListener != null){
+                mCancelListener.onCancelPressed();
             }
         }
 
@@ -477,12 +484,11 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         return mBrandLogo;
     }
     //==============================================================================================
-    public interface OnFragmentInteractionListener {
+    /*public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(int direction, int stageNo);
-    }
+    }*/
     public interface OnVisitorInteractionListener {
-
         void onTextInputInteraction(TextInputModel textInputModel);
     }
 
