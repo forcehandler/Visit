@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.sonu_pc.visit.activities.DataRefreshActivity;
 import com.example.sonu_pc.visit.activities.QrScanner;
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.activities.SignOutActivity;
@@ -90,6 +91,15 @@ public class WelcomeFragment extends Fragment implements View.OnClickListener {
         buttonList = new ArrayList<>();
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
+        mBrandLogo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Log.d(TAG, "long press detected");
+                Intent intent = new Intent(getActivity(), DataRefreshActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
         setBrandLogo();
         mButton_1 = view.findViewById(R.id.button1);
         mButton_2 = view.findViewById(R.id.button2);

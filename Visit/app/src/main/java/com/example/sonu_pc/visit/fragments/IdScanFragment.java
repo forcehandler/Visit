@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.fragments;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
@@ -27,6 +28,8 @@ import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
 import com.otaliastudios.cameraview.CameraListener;
 import com.otaliastudios.cameraview.CameraView;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -175,7 +178,8 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
             // convert the byte array to a bitmap
             mBitmapIdPhotoColor = BitmapFactory.decodeByteArray(picture, 0, picture.length);
 
-            sendCameraModel(mBitmapIdPhotoColor);
+            compressImage(saveImageToInternalStorage(mBitmapIdPhotoColor, visitor_name));
+            //sendCameraModel(mBitmapIdPhotoColor);
 
         }
     };
@@ -189,7 +193,7 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
         return cameraPreference;
     }
 
-    private void sendCameraModel(Bitmap photo){
+    /*private void sendCameraModel(Bitmap photo){
         if(mIdListener != null){
             Uri photoUri = saveImageToInternalStorage(mBitmapIdPhotoColor, visitor_name);
 
@@ -199,8 +203,44 @@ public class IdScanFragment extends Fragment implements View.OnClickListener {
             mIdListener.onPhotoTaken(cameraModel);
         }
 
+    }*/
+
+    private void sendCameraModel(Uri photoUri){
+        Log.d(TAG, "Uploading: " + photoUri.getPath().toString());
+        if(mIdListener != null) {
+            CameraModel cameraModel = new CameraModel();
+            Pair<String, Uri> pair = new Pair<>(mCameraPreference.getCamera_hint_text(), photoUri);
+            cameraModel.setCameraKeyUriPair(pair);
+            mIdListener.onPhotoTaken(cameraModel);
+        }
+        else{
+            Log.e(TAG, "mListener was null, so could not return the image to stage activity");
+        }
     }
 
+    private void compressImage(Uri imageUri){
+        Log.d(TAG, "compressing: " + imageUri.getPath().toString());
+        Picasso.with(getActivity()) .load(imageUri).resize(200, 200).centerCrop().into(target);
+    }
+
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            Uri photoUri = saveImageToInternalStorage(bitmap, visitor_name);
+            Log.d(TAG, "Got uri: " + photoUri.getPath().toString() + " after compression");
+            sendCameraModel(photoUri);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
 
     private Uri saveImageToInternalStorage(Bitmap bitmap, String filename){
 

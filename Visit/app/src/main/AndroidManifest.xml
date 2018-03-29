@@ -80,7 +80,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activities.SignOutActivity"></activity>
+        <activity android:name=".activities.SignOutActivity" />
+        <activity android:name=".activities.DataRefreshActivity"></activity>
     </application>
 
 </manifest>
