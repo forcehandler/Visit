@@ -2,6 +2,7 @@ package com.example.sonu_pc.visit.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.media.Rating;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import com.example.sonu_pc.visit.fragments.FaceIdFragment;
 import com.example.sonu_pc.visit.fragments.IdScanFragment;
 import com.example.sonu_pc.visit.fragments.NonDisclosureFragment;
 import com.example.sonu_pc.visit.fragments.RatingFragment;
+import com.example.sonu_pc.visit.fragments.SuggestionFragment;
 import com.example.sonu_pc.visit.fragments.SurveyFragment;
 import com.example.sonu_pc.visit.fragments.ThankYouFragment;
 import com.example.sonu_pc.visit.fragments.VisiteeInfoFragment;
@@ -34,6 +36,7 @@ import com.example.sonu_pc.visit.model.data_model.CameraModel;
 import com.example.sonu_pc.visit.model.data_model.Model;
 import com.example.sonu_pc.visit.model.data_model.NewDataModel;
 import com.example.sonu_pc.visit.model.data_model.RatingModel;
+import com.example.sonu_pc.visit.model.data_model.SuggestionModel;
 import com.example.sonu_pc.visit.model.data_model.SurveyModel;
 import com.example.sonu_pc.visit.model.data_model.TextInputModel;
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
@@ -41,6 +44,7 @@ import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
+import com.example.sonu_pc.visit.model.preference_model.SuggestionPreference;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
@@ -70,7 +74,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         VisiteeInfoFragment.OnFragmentInteractionListener,
         SurveyFragment.OnSurveyInteractionListener,
         ThankYouFragment.OnThankYouFragmentInteractionListener, IdScanFragment.OnIdPhotoTakenListener, FragmentCancelListener,
-        RatingFragment.RatingFragmentInterface{
+        RatingFragment.RatingFragmentInterface, SuggestionFragment.SuggestionFragmentInterface{
 
     private static final String TAG = StageActivity.class.getSimpleName();
 
@@ -109,7 +113,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
         final View decorView = getWindow().getDecorView();
         // Hide the status bar.
-        /*int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
         decorView.setOnSystemUiVisibilityChangeListener
@@ -135,11 +139,12 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                         }
                     }
                 });
-*/
 
 
         setContentView(R.layout.activity_stage);
-        AndroidBug5497Workaround.assistActivity(this);
+        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            AndroidBug5497Workaround.assistActivity(this);
+        }
 
         // Initialize the views
         mConstraintLayout = findViewById(R.id.constraint_container_signup);
@@ -274,6 +279,14 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                         .commit();
             }
 
+            else if(mCurrentPreference instanceof SuggestionPreference){
+                Log.d(TAG, "moving to suggestion preference fragment");
+                pref_obj_json = gson.toJson((SuggestionPreference) mCurrentPreference);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, SuggestionFragment.newInstance(pref_obj_json))
+                        .commit();
+            }
+
             else if(mCurrentPreference instanceof ThankYouPreference){
                 Log.d(TAG, "moving to thank you fragment");
 
@@ -363,26 +376,8 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         for(Pair<String, String> pair : quesAnsPairList){
             Log.d(TAG, "adding key : "  + pair.first);
             quesAnsMap.put(pair.first, pair.second);    // Add ques and answers for visitor doc
-            //questionsList.add(pair.first);  // Add questions for workflow doc
         }
-        /*for (Map.Entry<String, String> entry : quesAnsMap.entrySet()) {
-            String key = entry.getKey();
-            Log.d(TAG, key + " found");
-        }*/
-        /*Map<String, Object> quesMap = new HashMap<>();
-        quesMap.put("questions", questionsList);
 
-        workflowCollectionRef.document(workflow).update(quesMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.d(TAG, "uploaded the list of questions in " + workflow + " workflow");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e(TAG, "Failed to upload questions list to the workflow");
-            }
-        });*/
 
 
         visitorsCollectionRef.document(visitor_id).set(quesAnsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -545,7 +540,22 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             moveToNextFragment();
         }
         else{
-            Log.e(TAG, "Current preference object did not match the required object, check onSurveyInteraction");
+            Log.e(TAG, "Current preference object did not match the required object, check onRatingSubmit");
+        }
+    }
+
+    @Override
+    public void onSuggestionSubmit(SuggestionModel suggestionModel) {
+        Log.d(TAG, "obtained suggestions");
+        if(mCurrentPreference instanceof SuggestionPreference){
+            for(Map.Entry<String, String> item: suggestionModel.getSuggestions_map().entrySet()){
+                Pair<String, String> pair = new Pair<>(item.getKey(), item.getValue());
+                quesAnsPairList.add(pair);
+            }
+            moveToNextFragment();
+        }
+        else{
+            Log.e(TAG, "Current preference object did not match the required object, check onSuggestionSubmit");
         }
     }
 
@@ -582,6 +592,5 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         Log.d(TAG, "cancel pressed");
         initWelcomeFragment();
     }
-
 
 }

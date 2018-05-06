@@ -8,16 +8,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.TextView;
+
 
 import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.adapter.RatingsAdapter;
@@ -26,13 +23,9 @@ import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.gson.Gson;
 import com.yarolegovich.discretescrollview.DiscreteScrollView;
-import com.yarolegovich.discretescrollview.transform.ScaleTransformer;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,7 +50,6 @@ public class RatingFragment extends Fragment implements RatingsAdapter.ClickList
     private RatingPreferenceModel mRatingPreference;
 
     // Store the ratings
-    private String ratingAns1, ratingAns2;
     private Map<String, String> mRatingMap;
 
     // Listener object
@@ -95,8 +87,6 @@ public class RatingFragment extends Fragment implements RatingsAdapter.ClickList
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate()");
-        // Currently there's no brand logo in the layout hence no shared element
-        // transition code
 
         // Get the rating data from json
         if(getArguments() != null){

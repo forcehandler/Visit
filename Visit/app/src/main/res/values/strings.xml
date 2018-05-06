@@ -134,6 +134,7 @@
     <string name="CLASS_THANKYOU">CLASS_THANKYOU</string>
     <string name="CLASS_RATING">CLASS_RATING</string>
     <string name="CLASS_CAMERA">CLASS_CAMERA</string>
+    <string name="CLASS_SUGGESTION">CLASS_SUGGESTION</string>
 
     <string name="collection_ref_institutes">institutes</string>
     <string name="collection_ref_workflows">workflows</string>
@@ -145,4 +146,7 @@
     <string name="KEY_WORKFLOW_PREF_IS_SIGNEDOUT">isSignedOut</string>
     <string name="KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT">isWorkflowForSignOut</string>
     <string name="KEY_WORKFLOW_PREF_SIGNOUT_TIME">signOutTime</string>
+
+    <string name="text_next">NEXT</string>
+    <string name="text_skip">SKIP</string>
 </resources>

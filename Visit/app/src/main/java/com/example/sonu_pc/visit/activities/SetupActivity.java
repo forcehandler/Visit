@@ -27,6 +27,7 @@ import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
+import com.example.sonu_pc.visit.model.preference_model.SuggestionPreference;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
@@ -289,6 +290,12 @@ public class SetupActivity extends AppCompatActivity {
                             RatingPreferenceModel ratingPreferenceModel = screen.getValue(RatingPreferenceModel.class);
                             //Log.d(TAG, "survey class = " + cameraPreference.getCamera_hint_text());
                             orderOfScreensList.add(ratingPreferenceModel);
+                        }
+                        else if(getString(R.string.CLASS_SUGGESTION).equals(type)){
+                            Log.d(TAG, "got the rating class");
+                            SuggestionPreference preference = screen.getValue(SuggestionPreference.class);
+                            Log.d(TAG, "suggestion class = " + preference.getSuggestion_text());
+                            orderOfScreensList.add(preference);
                         }
 
                         else if(getString(R.string.CLASS_THANKYOU).equals(type)){

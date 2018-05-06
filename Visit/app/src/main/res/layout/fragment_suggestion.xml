@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.SuggestionFragment">
+
+    <ImageView
+        android:id="@+id/iv_brand_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/brand_logo"
+        android:layout_alignParentTop="true"
+        android:padding="@dimen/brand_logo_padding"/>
+
+    <TextView
+        android:id="@+id/tv_suggestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:text="Suggestion text placeholder"
+        android:layout_below="@id/iv_brand_logo"
+        android:textAppearance="@android:style/TextAppearance.Material.Headline" />
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tv_suggestion"
+        android:layout_above="@id/submit_btn"
+        android:padding="32dp">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/textInputEditText1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter your suggestions here.."
+            android:lines="6" />
+    </android.support.design.widget.TextInputLayout>
+
+    <Button
+        android:id="@+id/submit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/FirebaseUI.Button"
+        android:text="Skip"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+
+        android:padding="@dimen/button_padding" />
+</RelativeLayout>
