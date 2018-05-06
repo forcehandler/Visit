@@ -16,7 +16,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppThemeFullScreen"
+         >
         <activity
             android:name=".activities.printer.PrinterActivity"
             android:label="@string/app_title">
@@ -53,7 +54,8 @@
         <activity
             android:name=".SpeechRecognitionHelperActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".activities.StageActivity" />
+        <activity android:name=".activities.StageActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".activities.voiceRecognitionTest" />
 
         <service

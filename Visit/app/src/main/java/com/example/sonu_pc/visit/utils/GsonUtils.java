@@ -2,6 +2,7 @@ package com.example.sonu_pc.visit.utils;
 
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
+import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
@@ -22,7 +23,8 @@ public class GsonUtils {
                         .registerSubtype(TextInputPreferenceModel.class)
                         .registerSubtype(SurveyPreferenceModel.class)
                         .registerSubtype(ThankYouPreference.class)
-                        .registerSubtype(CameraPreference.class);
+                        .registerSubtype(CameraPreference.class)
+                        .registerSubtype(RatingPreferenceModel.class);
 
 
         Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapterFactory(adapter).create();

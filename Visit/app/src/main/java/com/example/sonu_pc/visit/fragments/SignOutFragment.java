@@ -191,6 +191,8 @@ public class SignOutFragment extends Fragment implements MyItemRecyclerViewAdapt
             }
         });
 
+        // TODO: Replace with Offline workflow storage to determine the workflow name with signout
+
     }
 
     private void getDataFromSignOutWorkflow(String workflow_name){
@@ -213,9 +215,14 @@ public class SignOutFragment extends Fragment implements MyItemRecyclerViewAdapt
                     for(DocumentSnapshot document : task.getResult()){
                         Log.d(TAG, "Id: " + document.getId() + "=> " + document.getData());
                         // TODO: Get the list of the items in a list of person objects and give it to the adapter
-                        SignOutItem item = new SignOutItem(document.getId(), document.getData().get("name").toString(),
-                                document.getData().get("signInTime").toString());
-                        items.add(item);
+                        if(document.getData().get("name") == null){
+                            Log.e(TAG, "No name field found in the sign out workflow");
+                        }
+                        else {
+                            SignOutItem item = new SignOutItem(document.getId(), document.getData().get("name").toString(),
+                                    document.getData().get("signInTime").toString());
+                            items.add(item);
+                        }
                     }
                     itemsCopy.addAll(items);
                     if(recyclerView != null) {

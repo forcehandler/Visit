@@ -3,6 +3,7 @@ package com.example.sonu_pc.visit.activities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.Rating;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -23,6 +24,7 @@ import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.fragments.FaceIdFragment;
 import com.example.sonu_pc.visit.fragments.IdScanFragment;
 import com.example.sonu_pc.visit.fragments.NonDisclosureFragment;
+import com.example.sonu_pc.visit.fragments.RatingFragment;
 import com.example.sonu_pc.visit.fragments.SurveyFragment;
 import com.example.sonu_pc.visit.fragments.ThankYouFragment;
 import com.example.sonu_pc.visit.fragments.VisiteeInfoFragment;
@@ -31,15 +33,18 @@ import com.example.sonu_pc.visit.fragments.WelcomeFragment;
 import com.example.sonu_pc.visit.model.data_model.CameraModel;
 import com.example.sonu_pc.visit.model.data_model.Model;
 import com.example.sonu_pc.visit.model.data_model.NewDataModel;
+import com.example.sonu_pc.visit.model.data_model.RatingModel;
 import com.example.sonu_pc.visit.model.data_model.SurveyModel;
 import com.example.sonu_pc.visit.model.data_model.TextInputModel;
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
 import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
+import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
+import com.example.sonu_pc.visit.utils.AndroidBug5497Workaround;
 import com.example.sonu_pc.visit.utils.GsonUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -64,7 +69,8 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         VisitorInfoFragment.OnVisitorInteractionListener,
         VisiteeInfoFragment.OnFragmentInteractionListener,
         SurveyFragment.OnSurveyInteractionListener,
-        ThankYouFragment.OnThankYouFragmentInteractionListener, IdScanFragment.OnIdPhotoTakenListener, FragmentCancelListener{
+        ThankYouFragment.OnThankYouFragmentInteractionListener, IdScanFragment.OnIdPhotoTakenListener, FragmentCancelListener,
+        RatingFragment.RatingFragmentInterface{
 
     private static final String TAG = StageActivity.class.getSimpleName();
 
@@ -103,7 +109,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
         final View decorView = getWindow().getDecorView();
         // Hide the status bar.
-        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        /*int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
 
         decorView.setOnSystemUiVisibilityChangeListener
@@ -129,8 +135,11 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                         }
                     }
                 });
+*/
+
 
         setContentView(R.layout.activity_stage);
+        AndroidBug5497Workaround.assistActivity(this);
 
         // Initialize the views
         mConstraintLayout = findViewById(R.id.constraint_container_signup);
@@ -186,7 +195,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         Gson gson2 = GsonUtils.getGsonParser();
         String workflow_json = preferences.getString(getString(R.string.PREF_KEY_MASTERWORKFLOW), "NOPREF");
         Log.d(TAG, "obtained_workflow_json = " + workflow_json);
-        if(workflow_json == "NOPREF"){
+        if(workflow_json.equals("NOPREF")){
             Log.e(TAG, "Could not fetch the workflow json from sharedpreferences");
         }
         else{
@@ -194,6 +203,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         }
     }
 
+    /*Runs after obtaining workflow key from welcome fragment*/
     private void initSessionWorkflow(String selected_workflow_key){
 
         workflow_name = selected_workflow_key;
@@ -208,7 +218,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             Log.e(TAG, "Did not obtain the selected workflow model");
         }
 
-        // TODO: Integrating Welcome fragment in stage activity
         //Start handling fragments after initializing session workflow given from welcome
         // fragment
         handleFragments();
@@ -220,7 +229,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         Log.d(TAG, "handleFragments()");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
         if(curr_stage < mOrderOfScreens.size()) { // if the curr screen no is within req no of screens
 
@@ -258,6 +266,14 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                         .replace(R.id.fragment_container, IdScanFragment.newInstance(pref_obj_json, visitor_id))
                         .commit();
             }
+            else if(mCurrentPreference instanceof RatingPreferenceModel){
+                Log.d(TAG, "moving to rating preference fragment");
+                pref_obj_json = gson.toJson((RatingPreferenceModel) mCurrentPreference);
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, RatingFragment.newInstance(pref_obj_json))
+                        .commit();
+            }
+
             else if(mCurrentPreference instanceof ThankYouPreference){
                 Log.d(TAG, "moving to thank you fragment");
 
@@ -266,10 +282,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                         .replace(R.id.fragment_container, ThankYouFragment.newInstance(pref_obj_json))
                         .commit();
                 Log.d(TAG, "uploading new visitor data model");
-
-                // TODO :remove this data model
-                //uploadDataModel();
-
 
                 //#################################################################
                 uploadWorkflow(workflow_name);
@@ -338,25 +350,26 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             quesAnsPairList.add(pair);
             pair = new Pair<>(getString(R.string.KEY_WORKFLOW_PREF_SIGNOUT_TIME), "0");
             quesAnsPairList.add(pair);
-            // Add a field to identify the SignOut enabled workflow in the firestore
+            /*// Add a field to identify the SignOut enabled workflow in the firestore
             Map<String, Boolean> map = new HashMap<>();
             map.put(getString(R.string.KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT), true);
-            workflowCollectionRef.document(workflow).set(map);
+            workflowCollectionRef.document(workflow).set(map);*/
         }
 
 
-        List<String> questionsList = new ArrayList<>();
+        // Add questions list to the workflow field
+        /*List<String> questionsList = new ArrayList<>();*/
         Map<String, String> quesAnsMap = new LinkedHashMap<>();
         for(Pair<String, String> pair : quesAnsPairList){
             Log.d(TAG, "adding key : "  + pair.first);
-            quesAnsMap.put(pair.first, pair.second);
-            questionsList.add(pair.first);
+            quesAnsMap.put(pair.first, pair.second);    // Add ques and answers for visitor doc
+            //questionsList.add(pair.first);  // Add questions for workflow doc
         }
-        for (Map.Entry<String, String> entry : quesAnsMap.entrySet()) {
+        /*for (Map.Entry<String, String> entry : quesAnsMap.entrySet()) {
             String key = entry.getKey();
             Log.d(TAG, key + " found");
-        }
-        Map<String, Object> quesMap = new HashMap<>();
+        }*/
+        /*Map<String, Object> quesMap = new HashMap<>();
         quesMap.put("questions", questionsList);
 
         workflowCollectionRef.document(workflow).update(quesMap).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -364,13 +377,23 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "uploaded the list of questions in " + workflow + " workflow");
             }
-        });
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to upload questions list to the workflow");
+            }
+        });*/
 
 
         visitorsCollectionRef.document(visitor_id).set(quesAnsMap).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d(TAG, "Uploaded the visitor ques Ans map");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e(TAG, "Failed to upload visitor data to firestore");
             }
         });
 
@@ -382,6 +405,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
 
     private void uploadPhotos(CollectionReference photoCollectionRef, List<Pair<String,Uri>> photosList){
 
+        // TODO: IMPORTANT https://stackoverflow.com/questions/38822982/firebase-uploading-images-when-internet-is-offline
 
         Map<String, String> photoKeyNameMap = new HashMap<>();
         for(Pair<String, Uri> pair : photosList){
@@ -415,7 +439,12 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d(TAG, "Uploaded image: " + foldername);
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    Log.d(TAG, "image url = " + downloadUrl.toString());
+                    if(downloadUrl != null) {
+                        Log.d(TAG, "image url = " + downloadUrl.toString());
+                    }
+                    else{
+                        Log.e(TAG, "Image download url obtained is null");
+                    }
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -427,10 +456,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
     }
 
     //##########################################################################################
-
-    private void showSnackbar(String message){
-        Snackbar.make(mConstraintLayout, message, Snackbar.LENGTH_SHORT).show();
-    }
 
     private void moveToNextFragment(){
         Log.d(TAG, "moving to next fragment");
@@ -481,7 +506,7 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
             for(Pair<String, String> pair : surveyModel.getSurvey_results()){
                 quesAnsPairList.add(pair);
             }
-            //quesAnsPairList.putAll(surveyModel.getSurvey_results());
+            //quesAnsPairList.putAll(surveyModel.getRating_answers());
 
             moveToNextFragment();
         }
@@ -500,6 +525,28 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
     public void onPhotoTaken(CameraModel cameraModel) {
         photoUriPairList.add(cameraModel.getCameraKeyUriPair());
         moveToNextFragment();
+    }
+
+    @Override
+    public void onRatingSubmit(RatingModel ratingModel) {
+        Log.d(TAG, "obtained ratings ");
+        if(mCurrentPreference instanceof RatingPreferenceModel){
+            mDataModelsMap.put("Ratings", ratingModel);
+
+            //########################################################################
+
+            for (Map.Entry<String, String> item : ratingModel.getRating_answers().entrySet()) {
+                String key = item.getKey();
+                String value = item.getValue();
+                Pair<String, String> pair = new Pair<>(key, value);
+                quesAnsPairList.add(pair);
+            }
+
+            moveToNextFragment();
+        }
+        else{
+            Log.e(TAG, "Current preference object did not match the required object, check onSurveyInteraction");
+        }
     }
 
     //[Disable back button]
@@ -535,4 +582,6 @@ public class StageActivity extends AppCompatActivity implements WelcomeFragment.
         Log.d(TAG, "cancel pressed");
         initWelcomeFragment();
     }
+
+
 }

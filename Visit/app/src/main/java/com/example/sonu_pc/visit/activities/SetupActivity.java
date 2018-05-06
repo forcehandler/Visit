@@ -26,6 +26,7 @@ import com.example.sonu_pc.visit.R;
 import com.example.sonu_pc.visit.model.preference_model.CameraPreference;
 import com.example.sonu_pc.visit.model.preference_model.MasterWorkflow;
 import com.example.sonu_pc.visit.model.preference_model.Preference;
+import com.example.sonu_pc.visit.model.preference_model.RatingPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.model.preference_model.ThankYouPreference;
@@ -280,9 +281,16 @@ public class SetupActivity extends AppCompatActivity {
                         else if(getString(R.string.CLASS_CAMERA).equals(type)){
                             Log.d(TAG, "got the camera class");
                             CameraPreference cameraPreference = screen.getValue(CameraPreference.class);
-                            Log.d(TAG, "survey class = " + cameraPreference.getCamera_hint_text());
+                            Log.d(TAG, "camera class = " + cameraPreference.getCamera_hint_text());
                             orderOfScreensList.add(cameraPreference);
                         }
+                        else if(getString(R.string.CLASS_RATING).equals(type)){
+                            Log.d(TAG, "got the rating class");
+                            RatingPreferenceModel ratingPreferenceModel = screen.getValue(RatingPreferenceModel.class);
+                            //Log.d(TAG, "survey class = " + cameraPreference.getCamera_hint_text());
+                            orderOfScreensList.add(ratingPreferenceModel);
+                        }
+
                         else if(getString(R.string.CLASS_THANKYOU).equals(type)){
                             Log.d(TAG, "got the thank you class");
                             ThankYouPreference thankYouPreference = screen.getValue(ThankYouPreference.class);

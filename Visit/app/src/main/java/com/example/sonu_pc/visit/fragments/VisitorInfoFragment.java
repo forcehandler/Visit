@@ -1,16 +1,15 @@
 package com.example.sonu_pc.visit.fragments;
 
 import android.content.Context;
-import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.transition.TransitionInflater;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -22,13 +21,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.SpeechRecognitionHelperActivity;
 import com.example.sonu_pc.visit.model.data_model.TextInputModel;
 import com.example.sonu_pc.visit.model.preference_model.TextInputPreferenceModel;
 import com.example.sonu_pc.visit.services.TextToSpeechService;
@@ -37,11 +34,8 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 
 public class VisitorInfoFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
@@ -54,14 +48,17 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
     private static final String ARG_PARAM2 = "param2";
 
     private ImageView mBrandLogo, mCancel;
-    private EditText mEditText1, mEditText2, mEditText3, mEditText4;
+    private TextInputEditText mEditText1, mEditText2, mEditText3, mEditText4;
+    private TextInputLayout mTextInputLayout1, mTextInputLayout2, mTextInputLayout3, mTextInputLayout4;
+
     private TextView mTextViewTitle;
     private Button mButtonNext;
     private ImageView microphone;
 
-    private EditText mFocusedEditText;
+    private TextInputEditText mFocusedEditText;
 
-    private List<EditText> mEditTexts;
+    private List<TextInputEditText> mEditTexts;
+    private List<TextInputLayout> mTextInputLayouts;
 
     private TextInputPreferenceModel mTextInputPreferenceModel;
 
@@ -108,6 +105,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
             Log.d(TAG, "text pref obj = " +  mTextInputPreferenceModel.getHints());
         }
         mEditTexts = new ArrayList<>();
+        mTextInputLayouts = new ArrayList<>();
 
 
         //##############################################################################
@@ -134,10 +132,16 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
         mBrandLogo = view.findViewById(R.id.iv_brand_logo);
         setBrandLogo();
-        mEditText1 = view.findViewById(R.id.editText1);
-        mEditText2 = view.findViewById(R.id.editText2);
-        mEditText3 = view.findViewById(R.id.editText3);
-        mEditText4 = view.findViewById(R.id.editText4);
+        mEditText1 = view.findViewById(R.id.tiEditText1);
+        mEditText2 = view.findViewById(R.id.tiEditText2);
+        mEditText3 = view.findViewById(R.id.tiEditText3);
+        mEditText4 = view.findViewById(R.id.tiEditText4);
+
+        mTextInputLayout1 = view.findViewById(R.id.textInputLayout1);
+        mTextInputLayout2 = view.findViewById(R.id.textInputLayout2);
+        mTextInputLayout3 = view.findViewById(R.id.textInputLayout3);
+        mTextInputLayout4 = view.findViewById(R.id.textInputLayout4);
+
         microphone = view.findViewById(R.id.image_mic);
 
         mCancel = view.findViewById(R.id.cancel);
@@ -145,12 +149,17 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
 
         mFocusedEditText = mEditText1;
 
-        mTextViewTitle = view.findViewById(R.id.textView1);
+        mTextViewTitle = view.findViewById(R.id.ratingQues1);
 
         mEditTexts.add(mEditText1);
         mEditTexts.add(mEditText2);
         mEditTexts.add(mEditText3);
         mEditTexts.add(mEditText4);
+
+        mTextInputLayouts.add(mTextInputLayout1);
+        mTextInputLayouts.add(mTextInputLayout2);
+        mTextInputLayouts.add(mTextInputLayout3);
+        mTextInputLayouts.add(mTextInputLayout4);
 
         mTextViewTitle.setText(mTextInputPreferenceModel.getPage_title());
         // Remove the unnecessary edit texts
@@ -159,7 +168,7 @@ public class VisitorInfoFragment extends Fragment implements View.OnClickListene
         }
 
         for(int i = 0;  i < mTextInputPreferenceModel.getHints().size(); i++){
-            mEditTexts.get(i).setHint(mTextInputPreferenceModel.getHints().get(i));
+            mTextInputLayouts.get(i).setHint(mTextInputPreferenceModel.getHints().get(i));
             mEditTexts.get(i).setOnTouchListener(this);
         }
         mButtonNext = view.findViewById(R.id.btn_next);

@@ -128,15 +128,19 @@
     <string name="PREF_FILE_MASTERWORKFLOW">PREF_FILE_MASTERWORKFLOW</string>
     <string name="PREF_KEY_MASTERWORKFLOW">PREF_KEY_MASTERWORKFLOW</string>
     <string name="INTENT_WORKFLOW_SELECT_KEY">INTENT_WORKFLOW_SELECT_KEY</string>
+
     <string name="CLASS_TEXTINPUT">CLASS_TEXTINPUT</string>
     <string name="CLASS_SURVEYINPUT">CLASS_SURVEYINPUT</string>
     <string name="CLASS_THANKYOU">CLASS_THANKYOU</string>
+    <string name="CLASS_RATING">CLASS_RATING</string>
+    <string name="CLASS_CAMERA">CLASS_CAMERA</string>
+
     <string name="collection_ref_institutes">institutes</string>
     <string name="collection_ref_workflows">workflows</string>
     <string name="collection_ref_visitors">visitors</string>
     <string name="class_type_firebase_pref">wipe</string>
     <string name="collection_ref_photos">photos</string>
-    <string name="CLASS_CAMERA">CLASS_CAMERA</string>
+
     <string name="KEY_WORKFLOW_PREF_SIGNIN_TIME">signInTime</string>
     <string name="KEY_WORKFLOW_PREF_IS_SIGNEDOUT">isSignedOut</string>
     <string name="KEY_WORKFLOW_DATA_IS_WORKFLOW_SIGNOUT">isWorkflowForSignOut</string>

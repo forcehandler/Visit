@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import com.example.sonu_pc.visit.FragmentCancelListener;
 import com.example.sonu_pc.visit.R;
-import com.example.sonu_pc.visit.model.preference_model.PreferencesModel;
 import com.example.sonu_pc.visit.model.data_model.SurveyModel;
 import com.example.sonu_pc.visit.model.preference_model.SurveyPreferenceModel;
 import com.example.sonu_pc.visit.utils.GsonUtils;
@@ -32,9 +30,7 @@ import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class SurveyFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
 
@@ -116,7 +112,7 @@ public class SurveyFragment extends Fragment implements View.OnClickListener, Vi
         mCancel = view.findViewById(R.id.cancel);
         mCancel.setOnClickListener(this);
 
-        mTextViewTitle = view.findViewById(R.id.textView1);
+        mTextViewTitle = view.findViewById(R.id.ratingQues1);
 
         mEditTexts.add(mEditText1);
         mEditTexts.add(mEditText2);

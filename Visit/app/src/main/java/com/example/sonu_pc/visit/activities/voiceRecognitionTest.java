@@ -7,16 +7,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.widget.Button;
 import android.widget.TextView;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import android.util.Log;
 
@@ -43,7 +38,7 @@ public class voiceRecognitionTest extends Activity
         setContentView(R.layout.activity_voice_recognition_test);
 
         //Button speakButton = (Button) findViewById(R.id.btn_speak);
-        mText = (TextView) findViewById(R.id.textView1);
+        mText = (TextView) findViewById(R.id.ratingQues1);
         //speakButton.setOnClickListener(this);
         sr = SpeechRecognizer.createSpeechRecognizer(this);
         sr.setRecognitionListener(new listener());
